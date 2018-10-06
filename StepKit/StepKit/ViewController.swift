@@ -33,6 +33,15 @@ extension ViewController {
             completion(false, HealthkitSetupError.notAvailableOnDevice)
             return
         }
+        
+        // 2. Prepare the data types that will interact with HealthKit
+        guard let setps = HKObjectType.quantityType(forIdentifier: .stepCount),
+            let distance = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning),
+            let c = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)
+        else {
+            completion(false, HealthkitSetupError.dataTypeNotAvailable)
+            return
+        }
     }
 }
 
