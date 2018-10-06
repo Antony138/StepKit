@@ -15,6 +15,22 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
+    
+    @IBAction func authorizeHealthKit(_ sender: UIButton) {
+        authorizeHealthKit { (success, error) in
+            guard success else {
+                let baseMessage = "HealthKit Authorization Failed"
+                if let error = error {
+                    print("\(baseMessage). Reason: \(error.localizedDescription)")
+                }
+                else {
+                    print(baseMessage)
+                }
+                return
+            }
+            print("HealthKit Successfully Authorized.")
+        }
+    }
 }
 
 
@@ -44,10 +60,13 @@ extension ViewController {
         }
         
         // 3. Prepare a list of types you want HealthKit to read and write
-        // HKObjectType.workoutType() is a special kind of HKObjectType. It represents any kind of workout.
-        let healthKitTypesToRead: Set<HKObjectType> = [steps, distance, energy, HKObjectType.workoutType()]
+        // HKObjectType.workoutType() : is a special kind of HKObjectType. It represents any kind of workout.
+        let healthKitTypesToRead: Set<HKObjectType> = [steps, distance, energy]
         
-        
+        // 4. Request Authorization
+        HKHealthStore().requestAuthorization(toShare: nil, read: healthKitTypesToRead) { (success, error) in
+            completion(success, error)
+        }
     }
 }
 
