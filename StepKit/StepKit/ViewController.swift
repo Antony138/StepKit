@@ -35,13 +35,19 @@ extension ViewController {
         }
         
         // 2. Prepare the data types that will interact with HealthKit
-        guard let setps = HKObjectType.quantityType(forIdentifier: .stepCount),
+        guard let steps = HKObjectType.quantityType(forIdentifier: .stepCount),
             let distance = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning),
-            let c = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)
+            let energy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)
         else {
             completion(false, HealthkitSetupError.dataTypeNotAvailable)
             return
         }
+        
+        // 3. Prepare a list of types you want HealthKit to read and write
+        // HKObjectType.workoutType() is a special kind of HKObjectType. It represents any kind of workout.
+        let healthKitTypesToRead: Set<HKObjectType> = [steps, distance, energy, HKObjectType.workoutType()]
+        
+        
     }
 }
 
