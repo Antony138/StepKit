@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import HealthKit
 
 class ViewController: UIViewController {
 
@@ -14,7 +15,29 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
-
-
 }
+
+
+// StepKit
+enum HealthkitSetupError: Error {
+    case notAvailableOnDevice
+    case dataTypeNotAvailable
+}
+
+extension ViewController {
+    // Authorizing HealthKit
+    func authorizeHealthKit(completion: @escaping (Bool, Error?) -> Swift.Void) {
+        
+        // 1. Check to see if HealthKit Is Available on this device
+        guard HKHealthStore.isHealthDataAvailable() else {
+            completion(false, HealthkitSetupError.notAvailableOnDevice)
+            return
+        }
+    }
+}
+
+
+
+
+
 
