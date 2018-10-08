@@ -17,15 +17,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fu4-sM-YyL">
-                                <rect key="frame" x="119" y="28" width="137" height="30"/>
-                                <state key="normal" title="Authorize HealthKit "/>
-                                <connections>
-                                    <action selector="authorizeHealthKit:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fvI-02-OJm"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ddA-uW-VFP">
-                                <rect key="frame" x="148.5" y="94" width="78" height="30"/>
+                                <rect key="frame" x="148.5" y="318.5" width="78" height="30"/>
                                 <state key="normal" title="Read Steps"/>
                                 <connections>
                                     <action selector="readSteps:" destination="BYZ-38-t0r" eventType="touchUpInside" id="vgO-dc-nT1"/>
@@ -34,9 +27,7 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="ddA-uW-VFP" firstAttribute="top" secondItem="fu4-sM-YyL" secondAttribute="bottom" constant="36" id="BzX-Co-04D"/>
-                            <constraint firstItem="fu4-sM-YyL" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="XBi-G8-hC8"/>
-                            <constraint firstItem="fu4-sM-YyL" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="tXr-uO-WNB"/>
+                            <constraint firstItem="ddA-uW-VFP" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="s30-th-rrN"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="xRx-QJ-p9e"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>

@@ -13,6 +13,7 @@
 		0AA071DA21688D3D00142E4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AA071D921688D3D00142E4C /* Assets.xcassets */; };
 		0AA071DD21688D3D00142E4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AA071DB21688D3D00142E4C /* LaunchScreen.storyboard */; };
 		0AA071E72168969E00142E4C /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AA071E62168969E00142E4C /* HealthKit.framework */; };
+		0AA071E9216B0CDF00142E4C /* StepKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA071E8216B0CDF00142E4C /* StepKitManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		0AA071DE21688D3D00142E4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AA071E42168969E00142E4C /* StepKit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepKit.entitlements; sourceTree = "<group>"; };
 		0AA071E62168969E00142E4C /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		0AA071E8216B0CDF00142E4C /* StepKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepKitManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 				0AA071E42168969E00142E4C /* StepKit.entitlements */,
 				0AA071D221688D3B00142E4C /* AppDelegate.swift */,
 				0AA071D421688D3B00142E4C /* ViewController.swift */,
+				0AA071E8216B0CDF00142E4C /* StepKitManager.swift */,
 				0AA071D621688D3B00142E4C /* Main.storyboard */,
 				0AA071D921688D3D00142E4C /* Assets.xcassets */,
 				0AA071DB21688D3D00142E4C /* LaunchScreen.storyboard */,
@@ -156,6 +159,7 @@
 			files = (
 				0AA071D521688D3B00142E4C /* ViewController.swift in Sources */,
 				0AA071D321688D3B00142E4C /* AppDelegate.swift in Sources */,
+				0AA071E9216B0CDF00142E4C /* StepKitManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
