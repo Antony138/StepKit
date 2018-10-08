@@ -16,7 +16,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        StepKitManager.shared.authorizeHealthKit { (success, error) in}
+        redirectLogToDocuments()
         return true
+    }
+    
+    func redirectLogToDocuments() {
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+        let documentsPath = paths.first!
+        let printPath = documentsPath.appendingFormat("/mylog.log")
+        freopen(printPath.cString(using: String.Encoding.ascii), "a+", stderr)
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

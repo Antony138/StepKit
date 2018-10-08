@@ -18,30 +18,13 @@ import HealthKit
 class StepKitManager: NSObject {
     static let shared = StepKitManager()
     
-    override init() {
-        super.init()
-        authorizeHealthKit { (success, error) in
-            guard success else {
-                let baseMessage = "HealthKit Authorization Failed"
-                if let error = error {
-                    print("\(baseMessage). Reason: \(error.localizedDescription)")
-                }
-                else {
-                    print(baseMessage)
-                }
-                return
-            }
-            print("HealthKit Successfully Authorized.")
-        }
-    }
-    
     /// Authorizing HealthKit
     ///
     /// Use to Request authorization from HealthKit.
     ///
     /// - Parameters:
     ///   - completion: The callback.
-    private func authorizeHealthKit(completion: @escaping (Bool, Error?) -> Swift.Void) {
+    func authorizeHealthKit(completion: @escaping (Bool, Error?) -> Swift.Void) {
         
         // 1. Check to see if HealthKit Is Available on this device
         guard HKHealthStore.isHealthDataAvailable() else {
@@ -64,6 +47,17 @@ class StepKitManager: NSObject {
         
         // 4. Request Authorization
         HKHealthStore().requestAuthorization(toShare: nil, read: healthKitTypesToRead) { (success, error) in
+            guard success else {
+                let baseMessage = "HealthKit Authorization Failed"
+                if let error = error {
+                    print("\(baseMessage). Reason: \(error.localizedDescription)")
+                }
+                else {
+                    print(baseMessage)
+                }
+                return
+            }
+            print("HealthKit Successfully Authorized.")
             completion(success, error)
         }
     }
@@ -86,12 +80,14 @@ class StepKitManager: NSObject {
         
         // QuantityType
         guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
-            fatalError("*** Unable to create a step count type ***")
+            print("*** Unable to create a step count type ***")
+            return
         }
         
         // Predicate
         guard let startDate = calendar.date(byAdding: .month, value: -months, to: startOfToday, wrappingComponents: false)  else {
-            fatalError("*** Unable to calculate the start date ***")
+            print("*** Unable to calculate the start date ***")
+            return
         }
         let quantitySmaplePredicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: HKQueryOptions())
         
@@ -112,9 +108,11 @@ class StepKitManager: NSObject {
                                                           intervalComponents: intervalComponent as DateComponents)
         
         // Set the results handler
+        // The results handler for this query’s initial results.
         collectionQuery.initialResultsHandler = { query, results, error in
             guard let stepsCollection = results else {
-                fatalError("*** An error occurred while calculating the statistics: \(String(describing: error?.localizedDescription)) ***")
+                print("*** An error occurred while calculating the statistics: \(String(describing: error?.localizedDescription)) ***")
+                return
             }
             
             var stepDays: [StepDay] = []
@@ -135,6 +133,24 @@ class StepKitManager: NSObject {
             })
             
             completion(true, stepDays, error)
+        }
+        
+        // The results handler for monitoring updates to the HealthKit store.
+        collectionQuery.statisticsUpdateHandler = { query, statistics, collection, error in
+            guard let updateCollection = collection else {
+                print("*** An error occurred while statistics update: \(String(describing: error?.localizedDescription)) ***")
+                return
+            }
+            
+            updateCollection.enumerateStatistics(from: startDate, to: now, with: { (statistics, stop) in
+                if let quantity = statistics.sumQuantity() {
+                    let startDate = statistics.startDate
+                    let endDate = statistics.endDate
+                    let steps = quantity.doubleValue(for: HKUnit.count())
+                    print("statisticsUpdateHandler")
+                    print("\(startDate.description(with: .current)) to \(endDate.description(with: .current)) : steps = \(steps)")
+                }
+            })
         }
         
         HKHealthStore().execute(collectionQuery)
