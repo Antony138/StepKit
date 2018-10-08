@@ -6,7 +6,12 @@
 //  Copyright © 2018 CONTI Inc. All rights reserved.
 //
 
-// StepKit
+enum DataSource {
+    case iPhoneItself
+    case otherSource // Include manual enter, other app enter etc.
+    case both
+}
+
 enum HealthkitSetupError: Error {
     case notAvailableOnDevice
     case dataTypeNotAvailable
@@ -73,7 +78,7 @@ class StepKitManager: NSObject {
     ///   - success: The result status of the callback.
     ///   - stepsCollection: Include the steps data (Use enumerateStatistics: method to parsing data).
     ///   - error: Return error if something wrong.
-    func readSteps(months: Int, intervalDays: Int, completion: @escaping (_ success: Bool, _ stepDays: [StepDay], _ error: Error?) -> Swift.Void) {
+    func readSteps(months: Int, intervalDays: Int, source: DataSource, completion: @escaping (_ success: Bool, _ stepDays: [StepDay], _ error: Error?) -> Swift.Void) {
         let calendar = NSCalendar.current
         let now = Date()
         let startOfToday = NSCalendar.current.startOfDay(for: now)
@@ -85,11 +90,21 @@ class StepKitManager: NSObject {
         }
         
         // Predicate
+        var quantitySmaplePredicate: NSCompoundPredicate? = nil
         guard let startDate = calendar.date(byAdding: .month, value: -months, to: startOfToday, wrappingComponents: false)  else {
             print("*** Unable to calculate the start date ***")
             return
         }
-        let quantitySmaplePredicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: HKQueryOptions())
+        let timePredicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: HKQueryOptions())
+        
+        // TODO: Judge only input ".otherSource"
+        if source == .iPhoneItself {
+            let dataSourcePredicate = NSPredicate(format: "metadata.%K != YES", HKMetadataKeyWasUserEntered, HKMetadataKeySyncIdentifier)
+            quantitySmaplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate, dataSourcePredicate])
+        }
+        else {
+            quantitySmaplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate])
+        }
         
         // Anchor Date
         // The anchor’s exact date doesn’t matter. So I made it as the start of “Today”
