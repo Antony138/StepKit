@@ -79,7 +79,7 @@ class StepKitManager: NSObject {
     ///   - success: The result status of the callback.
     ///   - stepsCollection: Include the steps data (Use enumerateStatistics: method to parsing data).
     ///   - error: Return error if something wrong.
-    func readSteps(months: Int, intervalDays: Int, completion: @escaping (_ success: Bool, _ stepsCollection: HKStatisticsCollection, _ error: Error?) -> Swift.Void) {
+    func readSteps(months: Int, intervalDays: Int, completion: @escaping (_ success: Bool, _ stepDays: [StepDay], _ error: Error?) -> Swift.Void) {
         let calendar = NSCalendar.current
         let now = Date()
         let startOfToday = NSCalendar.current.startOfDay(for: now)
@@ -117,16 +117,24 @@ class StepKitManager: NSObject {
                 fatalError("*** An error occurred while calculating the statistics: \(String(describing: error?.localizedDescription)) ***")
             }
             
+            var stepDays: [StepDay] = []
+            
             stepsCollection.enumerateStatistics(from: startDate, to: now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
                     let endDate = statistics.endDate
                     let steps = quantity.doubleValue(for: HKUnit.count())
-                    print("\(startDate.description(with: .current)) to \(endDate.description(with: .current)) : steps = \(Int(steps))")
+
+                    let stepDay = StepDay.initWith(steps: Int(steps),
+                                                   distance: 0.0,
+                                                   calorie: 0,
+                                                   startDate: startDate,
+                                                   endDate: endDate)
+                    stepDays.append(stepDay)
                 }
             })
             
-            completion(true, stepsCollection, error)
+            completion(true, stepDays, error)
         }
         
         HKHealthStore().execute(collectionQuery)
