@@ -12,13 +12,14 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
     }
     
     @IBAction func readSteps(_ sender: UIButton) {
         // Read 1 month steps, and the " fixed-length time intervals" is 1(mean get every day steps)
-        StepKitManager.shared.readSteps(months: 1, intervalDays: 1) { (success, stepsCollection, error) in
-            
+        StepKitManager.shared.readSteps(months: 1, intervalDays: 1) { (success, stepDays, error) in
+            for day: StepDay in stepDays {
+                print("\(day.startDate.description(with: .current)) to \(day.endDate.description(with: .current)) : steps = \(day.steps)")
+            }
         }
     }
 }
