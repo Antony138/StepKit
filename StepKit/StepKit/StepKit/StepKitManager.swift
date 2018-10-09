@@ -73,12 +73,16 @@ class StepKitManager: NSObject {
     ///
     /// - Parameters:
     ///   - months: How many months do you want to read.
-    ///   - intervalDays: The fixed-length time intervals.
     ///   - completion: The callback.
     ///   - success: The result status of the callback.
     ///   - stepsCollection: Include the steps data (Use enumerateStatistics: method to parsing data).
     ///   - error: Return error if something wrong.
-    func readSteps(months: Int, intervalDays: Int, source: DataSource, completion: @escaping (_ success: Bool, _ stepDays: [StepDay], _ error: Error?) -> Swift.Void) {
+    func readSteps(months: Int, completion: @escaping (_ success: Bool, _ stepDays: [StepDay], _ error: Error?) -> Swift.Void) {
+        // The fixed-length time intervals. 1: Get Every Day steps
+        let intervalDays = 1
+        // Just Get the step of iPhone
+        let source: DataSource = .iPhoneItself
+
         let calendar = NSCalendar.current
         let now = Date()
         let startOfToday = NSCalendar.current.startOfDay(for: now)
