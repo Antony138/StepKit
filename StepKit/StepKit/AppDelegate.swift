@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        StepKitManager.shared.authorizeHealthKit { (success, error) in}
+        StepKitManager.shared.authorizeHealthKit { _,_ in }
         redirectLogToDocuments()
         return true
     }
