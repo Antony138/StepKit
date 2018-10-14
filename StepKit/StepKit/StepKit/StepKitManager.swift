@@ -49,9 +49,10 @@ class StepKitManager: NSObject {
         // 3. Prepare a list of types you want HealthKit to read and write
         // HKObjectType.workoutType() : is a special kind of HKObjectType. It represents any kind of workout.
         let healthKitTypesToRead: Set<HKObjectType> = [steps, distance, energy]
+        let healthKitTypesToWrite: Set<HKSampleType> = [steps]
         
         // 4. Request Authorization
-        HKHealthStore().requestAuthorization(toShare: nil, read: healthKitTypesToRead) { (success, error) in
+        HKHealthStore().requestAuthorization(toShare: healthKitTypesToWrite, read: healthKitTypesToRead) { (success, error) in
             guard success else {
                 let baseMessage = "HealthKit Authorization Failed"
                 if let error = error {
@@ -173,5 +174,17 @@ class StepKitManager: NSObject {
         }
         
         HKHealthStore().execute(collectionQuery)
+    }
+    
+    func writeStepsToHealthKit() {
+        let now = Date()
+        let startOfDay = Calendar.current.startOfDay(for: now)
+        let stepsQuantityType = HKQuantityType.quantityType(forIdentifier: .stepCount)
+        let unit = HKUnit.count()
+        let quantity = HKQuantity(unit: unit, doubleValue: 100)
+        let sample = HKQuantitySample(type: stepsQuantityType!, quantity: quantity, start: startOfDay, end: now)
+        HKHealthStore().save(sample) { (success, error) in
+            print("Saving steps to healthStore - success:\(success)");
+        }  
     }
 }

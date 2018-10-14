@@ -23,5 +23,9 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    @IBAction func write100Steps(_ sender: UIButton) {
+        StepKitManager.shared.writeStepsToHealthKit()
+    }
 }
 

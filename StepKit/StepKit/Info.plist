@@ -45,5 +45,7 @@
 	<string>We need your steps information.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>We need to write steps to your HealthKit.</string>
 </dict>
 </plist>
