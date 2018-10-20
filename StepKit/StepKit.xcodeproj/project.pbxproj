@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0A4F91E2217AD80E0049ACC0 /* StepKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E1217AD80E0049ACC0 /* StepKitManager.swift */; };
-		0A4F91E8217AD8170049ACC0 /* StepDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E3217AD8170049ACC0 /* StepDay.swift */; };
 		0A4F91E9217AD8170049ACC0 /* DayRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E4217AD8170049ACC0 /* DayRecord.swift */; };
 		0A4F91EA217AD8170049ACC0 /* DistanceRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E5217AD8170049ACC0 /* DistanceRecord.swift */; };
 		0A4F91EB217AD8170049ACC0 /* CalorieRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E6217AD8170049ACC0 /* CalorieRecord.swift */; };
@@ -24,7 +23,6 @@
 
 /* Begin PBXFileReference section */
 		0A4F91E1217AD80E0049ACC0 /* StepKitManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StepKitManager.swift; path = Classes/StepKitManager.swift; sourceTree = "<group>"; };
-		0A4F91E3217AD8170049ACC0 /* StepDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StepDay.swift; path = Classes/StepDay.swift; sourceTree = "<group>"; };
 		0A4F91E4217AD8170049ACC0 /* DayRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DayRecord.swift; path = Classes/DayRecord.swift; sourceTree = "<group>"; };
 		0A4F91E5217AD8170049ACC0 /* DistanceRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DistanceRecord.swift; path = Classes/DistanceRecord.swift; sourceTree = "<group>"; };
 		0A4F91E6217AD8170049ACC0 /* CalorieRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CalorieRecord.swift; path = Classes/CalorieRecord.swift; sourceTree = "<group>"; };
@@ -70,7 +68,6 @@
 				0A4F91ED217AD81D0049ACC0 /* StepRecord.swift */,
 				0A4F91E6217AD8170049ACC0 /* CalorieRecord.swift */,
 				0A4F91E5217AD8170049ACC0 /* DistanceRecord.swift */,
-				0A4F91E3217AD8170049ACC0 /* StepDay.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -197,7 +194,6 @@
 				0AA071D321688D3B00142E4C /* AppDelegate.swift in Sources */,
 				0A4F91EB217AD8170049ACC0 /* CalorieRecord.swift in Sources */,
 				0A4F91EE217AD81D0049ACC0 /* StepRecord.swift in Sources */,
-				0A4F91E8217AD8170049ACC0 /* StepDay.swift in Sources */,
 				0A4F91E2217AD80E0049ACC0 /* StepKitManager.swift in Sources */,
 				0A4F91E9217AD8170049ACC0 /* DayRecord.swift in Sources */,
 			);
