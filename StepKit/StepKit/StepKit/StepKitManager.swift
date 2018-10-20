@@ -6,6 +6,10 @@
 //  Copyright © 2018 CONTI Inc. All rights reserved.
 //
 
+enum TimeUnit {
+    case day, month
+}
+
 enum DataSource {
     case iPhoneItself
     case otherSource // Include manual enter, other app enter etc.
@@ -86,7 +90,7 @@ class StepKitManager: NSObject {
     ///   - success: The result status of the callback.
     ///   - stepsCollection: Include the steps data (Use enumerateStatistics: method to parsing data).
     ///   - error: Return error if something wrong.
-    func readSteps(months: Int, completion: @escaping (_ success: Bool, _ stepDays: [StepDay], _ error: Error?) -> Swift.Void) {
+    func readSteps(months: Int, timeUnit: TimeUnit, completion: @escaping (_ success: Bool, _ stepDays: [StepDay], _ error: Error?) -> Swift.Void) {
         // The fixed-length time intervals. 1: Get Every Day steps
         let intervalDays = 1
         // Just Get the step of iPhone
