@@ -36,7 +36,7 @@ class StepKitManager: NSObject {
 
 
 extension StepKitManager {
-    // MARK: - authorizeHealthKit
+    // MARK: authorizeHealthKit
     /// Authorizing HealthKit
     ///
     /// Use to Request authorization from HealthKit.
@@ -89,7 +89,7 @@ extension StepKitManager {
 }
 
 extension StepKitManager {
-    // MARK: - readSteps
+    // MARK: readSteps
     /// readSteps Method
     ///
     /// Use to Read Steps from HealthKit.
@@ -269,6 +269,7 @@ extension StepKitManager {
 }
 
 extension StepKitManager {
+    // MARK: Helper Methods
     func startDayOfCurrentMonth() -> Date {
         return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: Date())))!
     }
@@ -292,6 +293,7 @@ extension StepKitManager {
 }
 
 extension StepKitManager {
+    // MARK: Write Steps into HealthKit
     func writeStepsToHealthKit() {
         let now = Date()
         let startOfDay = Calendar.current.startOfDay(for: now)
