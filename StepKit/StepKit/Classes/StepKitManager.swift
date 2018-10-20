@@ -29,7 +29,14 @@ class StepKitManager: NSObject {
     
     var dataSourcePredicate: NSPredicate?
     
-    
+    // Feedback
+    var stepRecords = [StepRecord]()
+    var monthRecords = [MonthRecord]()
+}
+
+
+extension StepKitManager {
+    // MARK: - authorizeHealthKit
     /// Authorizing HealthKit
     ///
     /// Use to Request authorization from HealthKit.
@@ -79,7 +86,10 @@ class StepKitManager: NSObject {
             completion(success, error)
         }
     }
-    
+}
+
+extension StepKitManager {
+    // MARK: - readSteps
     /// readSteps Method
     ///
     /// Use to Read Steps from HealthKit.
@@ -90,12 +100,13 @@ class StepKitManager: NSObject {
     ///   - success: The result status of the callback.
     ///   - stepsCollection: Include the steps data (Use enumerateStatistics: method to parsing data).
     ///   - error: Return error if something wrong.
-    func readSteps(months: Int, timeUnit: TimeUnit, completion: @escaping (_ success: Bool, _ stepDays: [StepDay], _ error: Error?) -> Swift.Void) {
+    func readSteps(months: Int, timeUnit: TimeUnit, completion: @escaping (_ success: Bool, _ stepDays: [Any], _ error: Error?) -> Swift.Void) {
+        generateMonthRecords(months: months)
         // The fixed-length time intervals. 1: Get Every Day steps
         let intervalDays = 1
         // Just Get the step of iPhone
         let source: DataSource = .iPhoneItself
-
+        
         let calendar = NSCalendar.current
         let now = Date()
         let startOfToday = NSCalendar.current.startOfDay(for: now)
@@ -149,25 +160,43 @@ class StepKitManager: NSObject {
                 print("*** An error occurred while calculating the statistics: \(String(describing: error?.localizedDescription)) ***")
                 return
             }
-            
-            var stepDays: [StepDay] = []
-            
+
             stepsCollection.enumerateStatistics(from: startDate, to: now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
-                    let startDate = statistics.startDate
-                    let endDate = statistics.endDate
-                    let steps = quantity.doubleValue(for: HKUnit.count())
-
-                    let stepDay = StepDay.initWith(steps: Int(steps),
-                                                   distance: 0.0,
-                                                   calorie: 0,
-                                                   startDate: startDate,
-                                                   endDate: endDate)
-                    stepDays.append(stepDay)
+                    if timeUnit == .day {
+                        // 正常返回，原来有多少，就返回多少，因为时间间隔设置为1了
+                        let startDate = statistics.startDate
+                        let endDate = statistics.endDate
+                        let steps = Int(quantity.doubleValue(for: HKUnit.count()))
+                        
+                        let stepRecord = StepRecord(step: steps, startDate: startDate, endDate: endDate)
+                        self.stepRecords.append(stepRecord)
+                        
+                    }
+                    else if timeUnit == .month {
+                        // Update Data
+                        let startDate = statistics.startDate
+                        _ = statistics.endDate
+                        let steps = Int(quantity.doubleValue(for: HKUnit.count()))
+                        
+                        for monthRecord in self.monthRecords {
+                            for dayRecord in monthRecord.days {
+                                // 根据日期判断，是否要将查询到的step加入到dayRecord中
+                                if dayRecord.startDate == startDate {
+                                    dayRecord.steps = steps
+                                }
+                            }
+                        }
+                    }
                 }
             })
             
-            completion(true, stepDays, error)
+            if timeUnit == .day {
+                completion(true, self.stepRecords, error)
+            }
+            else if timeUnit == .month {
+                completion(true, self.monthRecords, error)
+            }
         }
         
         // The results handler for monitoring updates to the HealthKit store.
@@ -215,6 +244,54 @@ class StepKitManager: NSObject {
         HKHealthStore().execute(sourceQuery)
     }
     
+    func generateMonthRecords(months: Int) {
+        for i in 0..<months {
+            let day = Calendar.current.date(byAdding: .month, value: -i, to: startDayOfCurrentMonth())!
+            let anchorDays = getMonthStartDayAndEndDayFor(day: day)
+            let monthRecord = MonthRecord.initWith(days: generateDayRecordsIn(startDayOfMonth: day), startDate: anchorDays.startDay, endDate: anchorDays.endDate)
+            monthRecords.append(monthRecord)
+        }
+    }
+    
+    func generateDayRecordsIn(startDayOfMonth: Date) -> [DayRecord] {
+        var dayRecords = [DayRecord]()
+        
+        let dayCount = getDayCountOf(day: startDayOfMonth)
+        
+        for i in 0..<dayCount {
+            let dayInMonth = Calendar.current.date(byAdding: DateComponents(day: i), to: startDayOfMonth)!
+            let anchorDays = getDayStartDayAndEndDayFor(day: dayInMonth)
+            let dayRecord = DayRecord.initWith(startDate: anchorDays.startDay, endDate: anchorDays.endDate)
+            dayRecords.append(dayRecord)
+        }
+        return dayRecords
+    }
+}
+
+extension StepKitManager {
+    func startDayOfCurrentMonth() -> Date {
+        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: Date())))!
+    }
+    
+    func getMonthStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
+        let startDay = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: day)))!
+        let endDay = Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: startDay)!
+        return (startDay, endDay)
+    }
+    
+    func getDayStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
+        let startDay = Calendar.current.startOfDay(for: day)
+        let endDay = Calendar.current.date(byAdding: DateComponents(day: 1), to: startDay)!
+        return (startDay, endDay)
+    }
+    
+    func getDayCountOf(day: Date) -> Int {
+        let range = Calendar.current.range(of: .day, in: .month, for: day)
+        return range!.count
+    }
+}
+
+extension StepKitManager {
     func writeStepsToHealthKit() {
         let now = Date()
         let startOfDay = Calendar.current.startOfDay(for: now)
@@ -224,6 +301,6 @@ class StepKitManager: NSObject {
         let sample = HKQuantitySample(type: stepsQuantityType!, quantity: quantity, start: startOfDay, end: now)
         HKHealthStore().save(sample) { (success, error) in
             print("Saving steps to healthStore - success:\(success)");
-        }  
+        }
     }
 }

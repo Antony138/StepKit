@@ -10,11 +10,11 @@ import Foundation
 
 struct StepRecord {
     // Confirm type
-    var step: Int?
-    var startDate: Date?
-    var endDate: Date?
+    var step: Int
+    var startDate: Date
+    var endDate: Date
     
-    init(step: Int?, startDate: Date?, endDate: Date?) {
+    init(step: Int, startDate: Date, endDate: Date) {
         self.step = step
         self.startDate = startDate
         self.endDate = endDate

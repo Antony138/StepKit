@@ -8,10 +8,17 @@
 
 import Foundation
 
-struct DayRecord {
-    var steps: Int?
-    var distance: Double?
-    var calorie: Int?
-    var startDate: Date?
-    var endDate: Date?
+class DayRecord: NSObject {
+    var steps = 0
+    var distance = 0.0
+    var calorie = 0
+    var startDate = Date()
+    var endDate = Date()
+    
+    class func initWith(startDate: Date, endDate: Date) -> DayRecord {
+        let dayRecord = DayRecord()
+        dayRecord.startDate = startDate
+        dayRecord.endDate = endDate
+        return dayRecord
+    }
 }

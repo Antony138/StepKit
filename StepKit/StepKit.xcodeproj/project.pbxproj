@@ -65,11 +65,11 @@
 		0A4F91E0217AD7BA0049ACC0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				0A4F91E7217AD8170049ACC0 /* MonthRecord.swift */,
+				0A4F91E4217AD8170049ACC0 /* DayRecord.swift */,
 				0A4F91ED217AD81D0049ACC0 /* StepRecord.swift */,
 				0A4F91E6217AD8170049ACC0 /* CalorieRecord.swift */,
-				0A4F91E4217AD8170049ACC0 /* DayRecord.swift */,
 				0A4F91E5217AD8170049ACC0 /* DistanceRecord.swift */,
-				0A4F91E7217AD8170049ACC0 /* MonthRecord.swift */,
 				0A4F91E3217AD8170049ACC0 /* StepDay.swift */,
 			);
 			name = Model;
