@@ -7,27 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A4F91C3217ACF790049ACC0 /* StepRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91C2217ACF790049ACC0 /* StepRecord.swift */; };
-		0A4F91C5217AD5710049ACC0 /* CalorieRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91C4217AD5710049ACC0 /* CalorieRecord.swift */; };
-		0A4F91C7217AD5A70049ACC0 /* DistanceRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91C6217AD5A70049ACC0 /* DistanceRecord.swift */; };
-		0A4F91C9217AD6270049ACC0 /* DayRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91C8217AD6270049ACC0 /* DayRecord.swift */; };
-		0A4F91CD217AD69C0049ACC0 /* MonthRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91CC217AD69C0049ACC0 /* MonthRecord.swift */; };
+		0A4F91E2217AD80E0049ACC0 /* StepKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E1217AD80E0049ACC0 /* StepKitManager.swift */; };
+		0A4F91E8217AD8170049ACC0 /* StepDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E3217AD8170049ACC0 /* StepDay.swift */; };
+		0A4F91E9217AD8170049ACC0 /* DayRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E4217AD8170049ACC0 /* DayRecord.swift */; };
+		0A4F91EA217AD8170049ACC0 /* DistanceRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E5217AD8170049ACC0 /* DistanceRecord.swift */; };
+		0A4F91EB217AD8170049ACC0 /* CalorieRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E6217AD8170049ACC0 /* CalorieRecord.swift */; };
+		0A4F91EC217AD8170049ACC0 /* MonthRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91E7217AD8170049ACC0 /* MonthRecord.swift */; };
+		0A4F91EE217AD81D0049ACC0 /* StepRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4F91ED217AD81D0049ACC0 /* StepRecord.swift */; };
 		0AA071D321688D3B00142E4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA071D221688D3B00142E4C /* AppDelegate.swift */; };
 		0AA071D521688D3B00142E4C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA071D421688D3B00142E4C /* ViewController.swift */; };
 		0AA071D821688D3B00142E4C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AA071D621688D3B00142E4C /* Main.storyboard */; };
 		0AA071DA21688D3D00142E4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AA071D921688D3D00142E4C /* Assets.xcassets */; };
 		0AA071DD21688D3D00142E4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AA071DB21688D3D00142E4C /* LaunchScreen.storyboard */; };
 		0AA071E72168969E00142E4C /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AA071E62168969E00142E4C /* HealthKit.framework */; };
-		0AA071E9216B0CDF00142E4C /* StepKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA071E8216B0CDF00142E4C /* StepKitManager.swift */; };
-		0AA071EC216B17F900142E4C /* StepDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA071EB216B17F900142E4C /* StepDay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0A4F91C2217ACF790049ACC0 /* StepRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepRecord.swift; sourceTree = "<group>"; };
-		0A4F91C4217AD5710049ACC0 /* CalorieRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalorieRecord.swift; sourceTree = "<group>"; };
-		0A4F91C6217AD5A70049ACC0 /* DistanceRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceRecord.swift; sourceTree = "<group>"; };
-		0A4F91C8217AD6270049ACC0 /* DayRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayRecord.swift; sourceTree = "<group>"; };
-		0A4F91CC217AD69C0049ACC0 /* MonthRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthRecord.swift; sourceTree = "<group>"; };
+		0A4F91E1217AD80E0049ACC0 /* StepKitManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StepKitManager.swift; path = Classes/StepKitManager.swift; sourceTree = "<group>"; };
+		0A4F91E3217AD8170049ACC0 /* StepDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StepDay.swift; path = Classes/StepDay.swift; sourceTree = "<group>"; };
+		0A4F91E4217AD8170049ACC0 /* DayRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DayRecord.swift; path = Classes/DayRecord.swift; sourceTree = "<group>"; };
+		0A4F91E5217AD8170049ACC0 /* DistanceRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DistanceRecord.swift; path = Classes/DistanceRecord.swift; sourceTree = "<group>"; };
+		0A4F91E6217AD8170049ACC0 /* CalorieRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CalorieRecord.swift; path = Classes/CalorieRecord.swift; sourceTree = "<group>"; };
+		0A4F91E7217AD8170049ACC0 /* MonthRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MonthRecord.swift; path = Classes/MonthRecord.swift; sourceTree = "<group>"; };
+		0A4F91ED217AD81D0049ACC0 /* StepRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StepRecord.swift; path = Classes/StepRecord.swift; sourceTree = "<group>"; };
 		0AA071CF21688D3B00142E4C /* StepKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AA071D221688D3B00142E4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0AA071D421688D3B00142E4C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -37,8 +39,6 @@
 		0AA071DE21688D3D00142E4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AA071E42168969E00142E4C /* StepKit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepKit.entitlements; sourceTree = "<group>"; };
 		0AA071E62168969E00142E4C /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
-		0AA071E8216B0CDF00142E4C /* StepKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepKitManager.swift; sourceTree = "<group>"; };
-		0AA071EB216B17F900142E4C /* StepDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepDay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +53,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A4F91DE217AD79D0049ACC0 /* StepKit */ = {
+			isa = PBXGroup;
+			children = (
+				0A4F91E1217AD80E0049ACC0 /* StepKitManager.swift */,
+				0A4F91E0217AD7BA0049ACC0 /* Model */,
+			);
+			name = StepKit;
+			sourceTree = "<group>";
+		};
+		0A4F91E0217AD7BA0049ACC0 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0A4F91ED217AD81D0049ACC0 /* StepRecord.swift */,
+				0A4F91E6217AD8170049ACC0 /* CalorieRecord.swift */,
+				0A4F91E4217AD8170049ACC0 /* DayRecord.swift */,
+				0A4F91E5217AD8170049ACC0 /* DistanceRecord.swift */,
+				0A4F91E7217AD8170049ACC0 /* MonthRecord.swift */,
+				0A4F91E3217AD8170049ACC0 /* StepDay.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		0AA071C621688D3B00142E4C = {
 			isa = PBXGroup;
 			children = (
@@ -76,7 +98,7 @@
 				0AA071E42168969E00142E4C /* StepKit.entitlements */,
 				0AA071D221688D3B00142E4C /* AppDelegate.swift */,
 				0AA071D421688D3B00142E4C /* ViewController.swift */,
-				0AA071EA216B17CF00142E4C /* StepKit */,
+				0A4F91DE217AD79D0049ACC0 /* StepKit */,
 				0AA071D621688D3B00142E4C /* Main.storyboard */,
 				0AA071D921688D3D00142E4C /* Assets.xcassets */,
 				0AA071DB21688D3D00142E4C /* LaunchScreen.storyboard */,
@@ -91,20 +113,6 @@
 				0AA071E62168969E00142E4C /* HealthKit.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		0AA071EA216B17CF00142E4C /* StepKit */ = {
-			isa = PBXGroup;
-			children = (
-				0AA071E8216B0CDF00142E4C /* StepKitManager.swift */,
-				0AA071EB216B17F900142E4C /* StepDay.swift */,
-				0A4F91C8217AD6270049ACC0 /* DayRecord.swift */,
-				0A4F91CC217AD69C0049ACC0 /* MonthRecord.swift */,
-				0A4F91C2217ACF790049ACC0 /* StepRecord.swift */,
-				0A4F91C4217AD5710049ACC0 /* CalorieRecord.swift */,
-				0A4F91C6217AD5A70049ACC0 /* DistanceRecord.swift */,
-			);
-			path = StepKit;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -184,14 +192,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				0AA071D521688D3B00142E4C /* ViewController.swift in Sources */,
+				0A4F91EC217AD8170049ACC0 /* MonthRecord.swift in Sources */,
+				0A4F91EA217AD8170049ACC0 /* DistanceRecord.swift in Sources */,
 				0AA071D321688D3B00142E4C /* AppDelegate.swift in Sources */,
-				0A4F91CD217AD69C0049ACC0 /* MonthRecord.swift in Sources */,
-				0A4F91C5217AD5710049ACC0 /* CalorieRecord.swift in Sources */,
-				0AA071EC216B17F900142E4C /* StepDay.swift in Sources */,
-				0A4F91C7217AD5A70049ACC0 /* DistanceRecord.swift in Sources */,
-				0AA071E9216B0CDF00142E4C /* StepKitManager.swift in Sources */,
-				0A4F91C3217ACF790049ACC0 /* StepRecord.swift in Sources */,
-				0A4F91C9217AD6270049ACC0 /* DayRecord.swift in Sources */,
+				0A4F91EB217AD8170049ACC0 /* CalorieRecord.swift in Sources */,
+				0A4F91EE217AD81D0049ACC0 /* StepRecord.swift in Sources */,
+				0A4F91E8217AD8170049ACC0 /* StepDay.swift in Sources */,
+				0A4F91E2217AD80E0049ACC0 /* StepKitManager.swift in Sources */,
+				0A4F91E9217AD8170049ACC0 /* DayRecord.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
