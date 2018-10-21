@@ -29,8 +29,13 @@ class StepKitManager: NSObject {
     
     var dataSourcePredicate: NSPredicate?
     
+    let calendar = NSCalendar.current
+    let now = Date()
+    let beginOfToday = NSCalendar.current.startOfDay(for: Date())
+    
     // Feedback
     var stepRecords = [StepRecord]()
+    var distanceRecords = [DistanceRecord]()
     var monthRecords = [MonthRecord]()
 }
 
@@ -82,6 +87,7 @@ extension StepKitManager {
             // Use this Predicate filter Data from user input & other apps inpout
             self.getDataSourcePredicate(done: { (dataSourcePredicate) in
                 self.dataSourcePredicate = dataSourcePredicate
+                print("Had Create getDataSourcePredicate.")
             })
             completion(success, error)
         }
@@ -107,10 +113,6 @@ extension StepKitManager {
         // Just Get the step of iPhone
         let source: DataSource = .iPhoneItself
         
-        let calendar = NSCalendar.current
-        let now = Date()
-        let startOfToday = NSCalendar.current.startOfDay(for: now)
-        
         // QuantityType
         guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
             print("*** Unable to create a step count type ***")
@@ -119,7 +121,7 @@ extension StepKitManager {
         
         // Predicate
         var quantitySmaplePredicate: NSCompoundPredicate? = nil
-        guard let startDate = calendar.date(byAdding: .month, value: -months, to: startOfToday, wrappingComponents: false)  else {
+        guard let startDate = calendar.date(byAdding: .month, value: -months, to: beginOfToday, wrappingComponents: false)  else {
             print("*** Unable to calculate the start date ***")
             return
         }
@@ -140,7 +142,7 @@ extension StepKitManager {
         // Anchor Date
         // The anchor’s exact date doesn’t matter. So I made it as the start of “Today”
         // If your "intervalDays" is beyond "1", maybe you should care about "anchorDate"
-        let anchorDate = startOfToday
+        let anchorDate = beginOfToday
         
         // intervalComponent:
         let intervalComponent = NSDateComponents()
@@ -161,7 +163,7 @@ extension StepKitManager {
                 return
             }
 
-            stepsCollection.enumerateStatistics(from: startDate, to: now, with: { (statistics, stop) in
+            stepsCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     if timeUnit == .day {
                         // 正常返回，原来有多少，就返回多少，因为时间间隔设置为1了
@@ -206,7 +208,7 @@ extension StepKitManager {
                 return
             }
             
-            updateCollection.enumerateStatistics(from: startDate, to: now, with: { (statistics, stop) in
+            updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
                     let endDate = statistics.endDate
@@ -215,6 +217,79 @@ extension StepKitManager {
                     print("\(startDate.description(with: .current)) to \(endDate.description(with: .current)) : steps = \(steps)")
                 }
             })
+        }
+        
+        HKHealthStore().execute(collectionQuery)
+    }
+}
+
+extension StepKitManager {
+    func readDistance(months: Int, timeUnit: TimeUnit, completion: @escaping (_ success: Bool, _ records: [Any], _ error: Error?) -> Void) {
+        generateMonthRecords(months: months)
+        let intervalDays = 1
+        let source: DataSource = .iPhoneItself
+        
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning) else {
+            print("*** Unable to create a step count type ***")
+            return
+        }
+        
+        // Predicate
+        var quantitySmaplePredicate: NSCompoundPredicate? = nil
+        guard let startDate = calendar.date(byAdding: .month, value: -months, to: beginOfToday) else {
+            print("*** Unable to calculate the start date ***")
+            return
+        }
+        let timePredicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: HKQueryOptions())
+        
+        guard let dataSourcePredicate = dataSourcePredicate else {
+            print("*** Not yet created dataSourcePredicate ***")
+            return
+        }
+        if source == .iPhoneItself {
+            quantitySmaplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate, dataSourcePredicate])
+        }
+        else {
+            quantitySmaplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate])
+        }
+        
+        let intervalComponent = DateComponents(day: intervalDays)
+        let collectionQuery = HKStatisticsCollectionQuery(quantityType: quantityType, quantitySamplePredicate: quantitySmaplePredicate, options: .cumulativeSum, anchorDate: beginOfToday, intervalComponents: intervalComponent)
+        
+        collectionQuery.initialResultsHandler = { query, results, error in
+            guard let distanceCollection = results else {
+                print("*** An error occurred while calculating the (distance) statistics ***")
+                return
+            }
+            
+            distanceCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
+                guard let quantity = statistics.sumQuantity() else {
+                    print("*** An error occurred while get statistics.sumQuantity() ***")
+                    return
+                }
+                let startDate = statistics.startDate
+                let endDate = statistics.endDate
+                let distance = quantity.doubleValue(for: HKUnit.meterUnit(with: .kilo))
+                if timeUnit == .day {
+                    let distanceRecord = DistanceRecord(distance: distance, startDate: startDate, endDate: endDate)
+                    self.distanceRecords.append(distanceRecord)
+                }
+                else if timeUnit == .month {
+                    for monthRecord in self.monthRecords {
+                        for dayRecord in monthRecord.days {
+                            if dayRecord.startDate == startDate {
+                                dayRecord.distance = distance
+                            }
+                        }
+                    }
+                }
+            })
+            if timeUnit == .day {
+                completion(true, self.distanceRecords, error)
+            }
+            else if timeUnit == .month {
+                completion(true, self.monthRecords, error)
+            }
         }
         
         HKHealthStore().execute(collectionQuery)

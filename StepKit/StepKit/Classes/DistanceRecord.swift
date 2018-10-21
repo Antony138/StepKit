@@ -9,7 +9,13 @@
 import Foundation
 
 struct DistanceRecord {
-    var distance: Double?
-    var startDate: Date?
-    var endDate: Date?
+    var distance: Double
+    var startDate: Date
+    var endDate: Date
+    
+    init(distance: Double, startDate: Date, endDate: Date) {
+        self.distance = distance
+        self.startDate = startDate
+        self.endDate = endDate
+    }
 }

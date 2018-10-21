@@ -33,6 +33,21 @@ class ViewController: UIViewController {
         }
     }
     
+    @IBAction func readDistance(_ sender: UIButton) {
+        StepKitManager.shared.readDistance(months: 3, timeUnit: .month) { (success, records, error) in
+            for distanceRecord in records as? [DistanceRecord] ?? [DistanceRecord]() {
+                print("\(distanceRecord.startDate.description(with: .current)) to \(distanceRecord.endDate.description(with: .current)) : distance = \(distanceRecord.distance)")
+            }
+            
+            for monthRecord in records as? [MonthRecord] ?? [MonthRecord]() {
+                print("\(monthRecord.startDate.description(with: .current)) to \(monthRecord.endDate.description(with: .current)) : distance = \(monthRecord.distance)")
+                for day in monthRecord.days {
+                    print("\(day.distance) in \(day.startDate.description(with: .current))")
+                }
+            }
+        }
+    }
+    
     @IBAction func write100Steps(_ sender: UIButton) {
         StepKitManager.shared.writeStepsToHealthKit()
     }
