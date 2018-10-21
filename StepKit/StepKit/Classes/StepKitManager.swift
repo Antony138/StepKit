@@ -42,7 +42,7 @@ class StepKitManager: NSObject {
 
 
 extension StepKitManager {
-    // MARK: authorizeHealthKit
+    // MARK: Authorize HealthKit
     /// Authorizing HealthKit
     ///
     /// Use to Request authorization from HealthKit.
@@ -60,9 +60,7 @@ extension StepKitManager {
         // 2. Prepare the data types that will interact with HealthKit
         guard let steps = HKObjectType.quantityType(forIdentifier: .stepCount),
             let distance = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning),
-            let energy = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)
-//            let energy = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)
-//            let energy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)
+            let energy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)
             else {
                 completion(false, HealthkitSetupError.dataTypeNotAvailable)
                 return
@@ -98,7 +96,7 @@ extension StepKitManager {
 }
 
 extension StepKitManager {
-    // MARK: readSteps
+    // MARK: Read Steps
     /// readSteps Method
     ///
     /// Use to Read Steps from HealthKit.
@@ -227,7 +225,7 @@ extension StepKitManager {
 }
 
 extension StepKitManager {
-    // MARK: readDistance
+    // MARK: Read Distance
     func readDistance(months: Int, timeUnit: TimeUnit, completion: @escaping (_ success: Bool, _ records: [Any], _ error: Error?) -> Void) {
         generateMonthRecords(months: months)
         let intervalDays = 1
@@ -268,7 +266,7 @@ extension StepKitManager {
             
             distanceCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 guard let quantity = statistics.sumQuantity() else {
-                    print("*** An error occurred while get statistics.sumQuantity() ***")
+                    print("*** An error occurred while get statistics.sumQuantity() -- Distance ***")
                     return
                 }
                 let startDate = statistics.startDate
@@ -300,18 +298,14 @@ extension StepKitManager {
 }
 
 extension StepKitManager {
-    // MARK: readCalorie
+    // MARK: Read Calorie
     func readCalorie(months: Int, timeUnit: TimeUnit, completion: @escaping (_ success: Bool, _ records: [Any], _ error: Error?) -> Void) {
         generateMonthRecords(months: months)
         let intervalDays = 1
-        let source: DataSource = .iPhoneItself
+        // Note: 读取calorie时，不能进行过滤, 因为进行过滤后，根本没有数据。原因未知。所以，calorie不是「硬件」产生的数据？是靠算法算出来的？
+        let source: DataSource = .both
         
-//        guard let quantityType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
-//            print("*** Unable to create a step count type ***")
-//            return
-//        }
-        
-        guard let quantityType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned) else {
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
             print("*** Unable to create a step count type ***")
             return
         }
@@ -343,16 +337,10 @@ extension StepKitManager {
                 print("*** An error occurred while calculating the (distance) statistics ***")
                 return
             }
-
-            print(calorieCollection.statistics().count)
-
             calorieCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
-                print(statistics)
-                print(statistics.sumQuantity() )
-                print(statistics.quantityType)
-
                 guard let quantity = statistics.sumQuantity() else {
-                    print("*** An error occurred while get statistics.sumQuantity() ***")
+                    // TODO: Note: 没有数据的那天, quantity会返回nil，所以，中间的「天」会断开，如果要保持连续性，应该插入空白数据的「天」(应该在下面append时候判断？)
+                    print("*** An error occurred while get statistics.sumQuantity() -- Calorie ***")
                     return
                 }
                 let startDate = statistics.startDate
@@ -380,43 +368,6 @@ extension StepKitManager {
             }
         }
         HKHealthStore().execute(collectionQuery)
-    }
-}
-
-
-extension StepKitManager {
-    func getActiveEnergy(currentDate: Date ,completion: @escaping ((_ totalEnergy: Double) -> Void)) {
-        let calendar = Calendar.current
-        var totalBurnedEnergy = Double()
-        let startOfDay = Int((currentDate.timeIntervalSince1970/86400)+1)*86400
-        let startOfDayDate = Date(timeIntervalSince1970: Double(startOfDay))
-        //   Get the start of the day
-        let newDate = calendar.startOfDay(for: startOfDayDate)
-        let startDate: Date = calendar.date(byAdding: Calendar.Component.day, value: -1, to: newDate)!
-        
-        //  Set the Predicates
-        let predicate = HKQuery.predicateForSamples(withStart: startDate as Date, end: newDate as Date, options: .strictStartDate)
-        
-        //  Perform the Query
-        let energySampleType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)
-        
-        let query = HKSampleQuery(sampleType: energySampleType!, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler: {
-            (query, results, error) in
-            if results == nil {
-                print("There was an error running the query: \(error)")
-            }
-            
-            DispatchQueue.main.async {
-                
-                for activity in results as! [HKQuantitySample]
-                {
-                    let calories = activity.quantity.doubleValue(for: HKUnit.kilocalorie())
-                    totalBurnedEnergy = totalBurnedEnergy + calories
-                }
-                completion(totalBurnedEnergy)
-            }
-        })
-        HKHealthStore().execute(query)
     }
 }
 

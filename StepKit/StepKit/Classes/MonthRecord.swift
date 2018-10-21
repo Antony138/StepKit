@@ -26,7 +26,7 @@ class MonthRecord: NSObject {
     var calorie: Int {
         var sum = 0
         days.forEach {
-            sum += $0.steps
+            sum += $0.calorie
         }
         return sum
     }
