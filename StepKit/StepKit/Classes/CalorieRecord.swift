@@ -9,7 +9,13 @@
 import Foundation
 
 struct CalorieRecord {
-    var calorie: Int?
-    var startDate: Date?
-    var endDate: Date?
+    var calorie: Int
+    var startDate: Date
+    var endDate: Date
+    
+    init(calorie: Int, startDate: Date, endDate: Date) {
+        self.calorie = calorie
+        self.startDate = startDate
+        self.endDate = endDate
+    }
 }

@@ -48,6 +48,33 @@ class ViewController: UIViewController {
         }
     }
     
+    @IBAction func readCalorie(_ sender: UIButton) {
+        StepKitManager.shared.readCalorie(months: 1, timeUnit: .day) { (success, records, error) in
+            for calorieRecord in records as? [CalorieRecord] ?? [CalorieRecord]() {
+                print("\(calorieRecord.startDate.description(with: .current)) to \(calorieRecord.endDate.description(with: .current)) : calorie = \(calorieRecord.calorie)")
+            }
+
+            for monthRecord in records as? [MonthRecord] ?? [MonthRecord]() {
+                print("\(monthRecord.startDate.description(with: .current)) to \(monthRecord.endDate.description(with: .current)) : calorie = \(monthRecord.calorie)")
+                for day in monthRecord.days {
+                    print("\(day.calorie) in \(day.startDate.description(with: .current))")
+                }
+            }
+
+        }
+        
+        
+        
+        // 可以一天一天取
+//        let yDay = Calendar.current.date(byAdding: DateComponents(day: -1), to: Date())!
+//        StepKitManager.shared.getActiveEnergy(currentDate: yDay) { (calorie) in
+//            print(calorie)
+//        }
+    }
+    
+    
+    
+    
     @IBAction func write100Steps(_ sender: UIButton) {
         StepKitManager.shared.writeStepsToHealthKit()
     }
