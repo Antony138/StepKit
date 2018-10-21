@@ -219,8 +219,10 @@ extension StepKitManager {
         
         HKHealthStore().execute(collectionQuery)
     }
-    
-    // Help Method
+}
+
+extension StepKitManager {
+    // MARK: Helper Methods
     // Use This method, we can filter the data from: 1.Manual input; 2.Third-party app generation
     func getDataSourcePredicate(done:@escaping (_ dataSourcePredicate: NSPredicate) -> Void)  {
         var callBackDataSource: Set<HKSource> = []
@@ -244,6 +246,27 @@ extension StepKitManager {
         HKHealthStore().execute(sourceQuery)
     }
     
+    func startDayOfCurrentMonth() -> Date {
+        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: Date())))!
+    }
+    
+    func getMonthStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
+        let startDay = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: day)))!
+        let endDay = Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: startDay)!
+        return (startDay, endDay)
+    }
+    
+    func getDayStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
+        let startDay = Calendar.current.startOfDay(for: day)
+        let endDay = Calendar.current.date(byAdding: DateComponents(day: 1), to: startDay)!
+        return (startDay, endDay)
+    }
+    
+    func getDayCountOf(day: Date) -> Int {
+        let range = Calendar.current.range(of: .day, in: .month, for: day)
+        return range!.count
+    }
+    
     func generateMonthRecords(months: Int) {
         for i in 0..<months {
             let day = Calendar.current.date(byAdding: .month, value: -i, to: startDayOfCurrentMonth())!
@@ -265,30 +288,6 @@ extension StepKitManager {
             dayRecords.append(dayRecord)
         }
         return dayRecords
-    }
-}
-
-extension StepKitManager {
-    // MARK: Helper Methods
-    func startDayOfCurrentMonth() -> Date {
-        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: Date())))!
-    }
-    
-    func getMonthStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
-        let startDay = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: day)))!
-        let endDay = Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: startDay)!
-        return (startDay, endDay)
-    }
-    
-    func getDayStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
-        let startDay = Calendar.current.startOfDay(for: day)
-        let endDay = Calendar.current.date(byAdding: DateComponents(day: 1), to: startDay)!
-        return (startDay, endDay)
-    }
-    
-    func getDayCountOf(day: Date) -> Int {
-        let range = Calendar.current.range(of: .day, in: .month, for: day)
-        return range!.count
     }
 }
 
