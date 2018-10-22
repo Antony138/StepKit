@@ -150,6 +150,7 @@ extension StepKitManager {
         intervalComponent.day = intervalDays
         
         // Create the query
+        // This query just can query one type of data at a time. So if we want query "step", "distance", "calorie" at a time, we must query 3 times.
         let collectionQuery = HKStatisticsCollectionQuery(quantityType: quantityType,
                                                           quantitySamplePredicate: quantitySmaplePredicate,
                                                           options: .cumulativeSum,
