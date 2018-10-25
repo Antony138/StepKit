@@ -97,6 +97,52 @@ extension StepKitManager {
 }
 
 extension StepKitManager {
+    // MARK: Create Observer Query
+    func createObserverQuery(completion: @escaping (_ success: Bool, _ newSteps: Int, _ error: Error?) -> Swift.Void) {
+        // TODO: Modify to: .iPhoneItself
+        let source: DataSource = .both
+        
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            print("*** Unable to create a step count type ***")
+            return
+        }
+        
+        // Predicate
+        var quantitySamplePredicate: NSCompoundPredicate?
+        
+        let anchorDays = getDayStartDayAndEndDayFor(day: Date())
+        
+        let timePredicate = HKQuery.predicateForSamples(withStart: anchorDays.startDay, end: anchorDays.endDate, options: HKQueryOptions())
+        
+        if source == .iPhoneItself {
+            if let dataSourcePredicate = dataSourcePredicate {
+                quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate, dataSourcePredicate])
+            }
+            else {
+                print("*** Not yet created dataSourcePredicate ***")
+            }
+        }
+        else {
+            quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate])
+        }
+        
+        let observerQuery = HKObserverQuery(sampleType: quantityType, predicate: quantitySamplePredicate) { (query, completionHandler, error) in
+            
+            if let error = error {
+                print("*** An error occured while setting up the stepCount observer. \(error.localizedDescription) ***")
+                abort()
+            }
+            
+            // HealthStore中的数据发生了变化，都会回调到这里。然后在这里再次执行查询？
+            // 所以这里不是观察某些具体数据的变化，而是观察整个HelthKit的变化？
+            
+            completion(true, 666, nil)
+        }
+        HKHealthStore().execute(observerQuery)
+    }
+}
+
+extension StepKitManager {
     // MARK: Read Steps
     /// readSteps Method
     ///

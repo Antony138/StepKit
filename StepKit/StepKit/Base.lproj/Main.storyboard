@@ -45,17 +45,26 @@
                                     <action selector="readCalorie:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WZ9-Wa-WZ5"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DK2-rs-Mle">
+                                <rect key="frame" x="116.5" y="510.5" width="142" height="30"/>
+                                <state key="normal" title="Read Step Real Time"/>
+                                <connections>
+                                    <action selector="readStepsRealTime:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zpH-cX-tBp"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Y6d-Da-nud" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BAu-OV-gzw"/>
                             <constraint firstItem="yhE-wm-iyY" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FG9-vN-5hu"/>
+                            <constraint firstItem="DK2-rs-Mle" firstAttribute="top" secondItem="VZX-N6-UXu" secondAttribute="bottom" constant="30" id="PWd-9z-hJM"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="top" secondItem="yhE-wm-iyY" secondAttribute="bottom" constant="30" id="PaG-zT-Z3b"/>
                             <constraint firstItem="VZX-N6-UXu" firstAttribute="top" secondItem="Y6d-Da-nud" secondAttribute="bottom" constant="36" id="UwL-NS-LZ5"/>
                             <constraint firstItem="Y6d-Da-nud" firstAttribute="top" secondItem="ddA-uW-VFP" secondAttribute="bottom" constant="36" id="XXi-Lu-yxx"/>
                             <constraint firstItem="VZX-N6-UXu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="csp-RX-cGx"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="s30-th-rrN"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="xRx-QJ-p9e"/>
+                            <constraint firstItem="DK2-rs-Mle" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="z5X-sQ-wfZ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
