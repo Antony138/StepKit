@@ -38,6 +38,7 @@ class StepKitManager: NSObject {
     var distanceRecords = [DistanceRecord]()
     var calorieRecords = [CalorieRecord]()
     var monthRecords = [MonthRecord]()
+    // TODO: generate DayRecords when the timeUnit is day
 }
 
 
