@@ -52,14 +52,18 @@
                                     <action selector="readStepsRealTime:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zpH-cX-tBp"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="irp-do-0Mg">
-                                <rect key="frame" x="166.5" y="28" width="42" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="irp-do-0Mg">
+                                <rect key="frame" x="8" y="28" width="359" height="70"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="70" id="eXX-I7-lc2"/>
+                                </constraints>
+                                <string key="text">LabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabel</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LJB-dj-PAS">
-                                <rect key="frame" x="138" y="65" width="99" height="30"/>
+                                <rect key="frame" x="138" y="136" width="99" height="30"/>
                                 <state key="normal" title="Query All Data"/>
                                 <connections>
                                     <action selector="queryAllData:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nfo-6D-H7M"/>
@@ -68,18 +72,19 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="irp-do-0Mg" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="6jt-jc-OQL"/>
                             <constraint firstItem="Y6d-Da-nud" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BAu-OV-gzw"/>
                             <constraint firstItem="yhE-wm-iyY" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FG9-vN-5hu"/>
                             <constraint firstItem="DK2-rs-Mle" firstAttribute="top" secondItem="VZX-N6-UXu" secondAttribute="bottom" constant="30" id="PWd-9z-hJM"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="top" secondItem="yhE-wm-iyY" secondAttribute="bottom" constant="30" id="PaG-zT-Z3b"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="irp-do-0Mg" secondAttribute="trailing" constant="8" id="S7U-n7-k1a"/>
+                            <constraint firstItem="irp-do-0Mg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="TzQ-ej-Yga"/>
                             <constraint firstItem="VZX-N6-UXu" firstAttribute="top" secondItem="Y6d-Da-nud" secondAttribute="bottom" constant="36" id="UwL-NS-LZ5"/>
                             <constraint firstItem="Y6d-Da-nud" firstAttribute="top" secondItem="ddA-uW-VFP" secondAttribute="bottom" constant="36" id="XXi-Lu-yxx"/>
                             <constraint firstItem="LJB-dj-PAS" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="YGL-2G-Qju"/>
                             <constraint firstItem="VZX-N6-UXu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="csp-RX-cGx"/>
                             <constraint firstItem="irp-do-0Mg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="f7M-dD-8EP"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="s30-th-rrN"/>
-                            <constraint firstItem="LJB-dj-PAS" firstAttribute="top" secondItem="irp-do-0Mg" secondAttribute="bottom" constant="16" id="uqn-pk-Ebe"/>
+                            <constraint firstItem="LJB-dj-PAS" firstAttribute="top" secondItem="irp-do-0Mg" secondAttribute="bottom" constant="38" id="uqn-pk-Ebe"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="xRx-QJ-p9e"/>
                             <constraint firstItem="DK2-rs-Mle" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="z5X-sQ-wfZ"/>
                         </constraints>

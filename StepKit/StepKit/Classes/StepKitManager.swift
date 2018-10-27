@@ -102,35 +102,72 @@ extension StepKitManager {
 
 extension StepKitManager {
     
-    func queryAllData(months: Int, timeUnit: TimeUnit, done: @escaping (_ success: Bool, _ records: [Any], _ tadayRecord: DayRecord, _ error: Error?) -> Void) {
+    func queryAllData(months: Int, timeUnit: TimeUnit, done: @escaping (_ success: Bool, _ records: [Any], _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
         generateMonthRecords(months: months)
         generateDayRecords()
+        
+        var errors: Error?
         
         let dispatchGroup = DispatchGroup()
         
         dispatchGroup.enter()
         queryData(dataType: .step, months: months, timeUnit: timeUnit, source: .iPhoneItself) { (success, records, error) in
+            errors = error
             dispatchGroup.leave()
         }
         dispatchGroup.wait()
         
         dispatchGroup.enter()
         queryData(dataType: .distance, months: months, timeUnit: timeUnit, source: .iPhoneItself) { (success, records, error) in
+            errors = error
             dispatchGroup.leave()
         }
         dispatchGroup.wait()
         
         dispatchGroup.enter()
         queryData(dataType: .calorie, months: months, timeUnit: timeUnit, source: .both) { (success, records, error) in
+            errors = error
             dispatchGroup.leave()
         }
         dispatchGroup.wait()
         
+        guard errors == nil else {
+            print("*** An error occurred while calculating the statistics:\(String(describing: errors))")
+            done(false, [Any](), nil, nil)
+            return
+        }
+        
         dispatchGroup.notify(queue: .main) {
-            done(true, [Any](), DayRecord(), nil)
+            if timeUnit == .day {
+                done(true, self.dayRecords, self.getTodayRecord(timeUnit: timeUnit), nil)
+            }
+            else {
+                done(true, self.monthRecords, self.getTodayRecord(timeUnit: timeUnit), nil)
+            }
         }
     }
     
+    func getTodayRecord(timeUnit: TimeUnit) -> DayRecord?  {
+        var  todayRecord: DayRecord?
+        switch timeUnit {
+        case .day:
+            for day in dayRecords {
+                if day.startDate == Calendar.current.startOfDay(for: Date()) {
+                    todayRecord = day
+                }
+            }
+        case .month:
+            if let monthRecord = monthRecords.first {
+                for dayRecord in monthRecord.days {
+                    if dayRecord.startDate == Calendar.current.startOfDay(for: Date()) {
+                        todayRecord = dayRecord
+                        break
+                    }
+                }
+            }
+        }
+        return todayRecord
+    }
     
     func queryData(dataType: DataType, months: Int, timeUnit: TimeUnit, source: DataSource, done: @escaping (_ success: Bool, _ records: [Any], _ error: Error?) -> Void) {
         // The fixed-length time intervals. 1: Get Every Day steps
@@ -234,6 +271,7 @@ extension StepKitManager {
             
             if timeUnit == .day {
                 done(true, self.dayRecords, error)
+                
             }
             else if timeUnit == .month {
                 done(true, self.monthRecords, error)
@@ -629,6 +667,7 @@ extension StepKitManager {
     }
     
     func generateMonthRecords(months: Int) {
+        monthRecords.removeAll()
         for i in 0..<months {
             let day = Calendar.current.date(byAdding: .month, value: -i, to: startDayOfCurrentMonth())!
             let anchorDays = getMonthStartDayAndEndDayFor(day: day)
@@ -638,6 +677,7 @@ extension StepKitManager {
     }
     
     func generateDayRecords() {
+        dayRecords.removeAll()
         // You must call generateMonthRecords() befor call this method
         // Order: ......the day before yesterday >> yesterday >> today
         for monthRecord in monthRecords.reversed() {
