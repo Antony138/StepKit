@@ -178,7 +178,7 @@ extension StepKitManager {
         // The fixed-length time intervals. 1: Get Every Day steps
         let intervalDays = 1
         // Just Get the step of iPhone
-        let source: DataSource = .iPhoneItself
+        let source: DataSource = .both
         
         // QuantityType
         guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
@@ -276,6 +276,7 @@ extension StepKitManager {
                 return
             }
             
+            print("Receive statisticsUpdateHandler")
             updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
@@ -296,8 +297,7 @@ extension StepKitManager {
                             }
                         }
                     }
-                    print("statisticsUpdateHandler")
-                    print("\(startDate.description(with: .current)) to \(endDate.description(with: .current)) : steps = \(steps)")
+//                    print("\(startDate.description(with: .current)) to \(endDate.description(with: .current)) : steps = \(steps)")
                 }
             })
             if timeUnit == .day {
