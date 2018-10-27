@@ -86,6 +86,10 @@ extension StepKitManager {
             }
             print("HealthKit Successfully Authorized.")
             
+            // Setup Background updates
+            self.startObserverQuery(completion: { (_, _, _) in
+            })
+            
             // Use this Predicate filter Data from user input & other apps inpout
             self.getDataSourcePredicate(done: { (dataSourcePredicate) in
                 self.dataSourcePredicate = dataSourcePredicate
@@ -133,12 +137,27 @@ extension StepKitManager {
                 abort()
             }
             
+            // Do something for the update what you want.
+            print("*** Receive HKObserverQuery Update, Do something for the update what you want. ***")
+            
+            // If you have subscribed for background updates you must call the completion handler here.
+             completionHandler()
+            
             // HealthStore中的数据发生了变化，都会回调到这里。然后在这里再次执行查询？
             // 所以这里不是观察某些具体数据的变化，而是观察整个HelthKit的变化？
             
             completion(true, 666, nil)
         }
         HKHealthStore().execute(observerQuery)
+        HKHealthStore().enableBackgroundDelivery(for: quantityType, frequency: .immediate) { (success, error) in
+            if success {
+                print("*** Enabled background delivery of steps changes. ***")
+            }
+            else if let error = error {
+                print("Failed to enable background delivery of steps changes. ")
+                print("Error = \(error)")
+            }
+        }
     }
 }
 
