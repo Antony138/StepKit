@@ -16,6 +16,10 @@ enum DataSource {
     case both
 }
 
+enum DataType {
+    case step, distance, calorie
+}
+
 enum HealthkitSetupError: Error {
     case notAvailableOnDevice
     case dataTypeNotAvailable
@@ -97,48 +101,194 @@ extension StepKitManager {
 }
 
 extension StepKitManager {
-    // MARK: Create Observer Query
-    func createObserverQuery(completion: @escaping (_ success: Bool, _ newSteps: Int, _ error: Error?) -> Swift.Void) {
-        // TODO: Modify to: .iPhoneItself
-        let source: DataSource = .both
+    
+    func queryAllData(months: Int, timeUnit: TimeUnit, done: @escaping (_ success: Bool, _ records: [Any], _ tadayRecord: DayRecord, _ error: Error?) -> Void) {
+        generateMonthRecords(months: months)
+        generateDayRecords()
         
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
-            print("*** Unable to create a step count type ***")
-            return
+        queryData(dataType: .step, months: months, timeUnit: timeUnit, source: .iPhoneItself) { (success, records, error) in
+            print("1")
+        }
+        
+        queryData(dataType: .distance, months: months, timeUnit: timeUnit, source: .iPhoneItself) { (success, records, error) in
+            print("2")
+        }
+        
+        queryData(dataType: .calorie, months: months, timeUnit: timeUnit, source: .both) { (success, records, error) in
+            print("3")
+        }
+    }
+    
+    
+    func queryData(dataType: DataType, months: Int, timeUnit: TimeUnit, source: DataSource, done: @escaping (_ success: Bool, _ records: [Any], _ error: Error?) -> Void) {
+        // The fixed-length time intervals. 1: Get Every Day steps
+        let intervalDays = 1
+        
+        // QuantityType
+        var quantityType: HKQuantityType
+        switch dataType {
+        case .step:
+            quantityType = HKObjectType.quantityType(forIdentifier: .stepCount)!
+        case .distance:
+            quantityType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
+        case .calorie:
+            quantityType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
         }
         
         // Predicate
-        var quantitySamplePredicate: NSCompoundPredicate?
-        
-        let anchorDays = getDayStartDayAndEndDayFor(day: Date())
-        
-        let timePredicate = HKQuery.predicateForSamples(withStart: anchorDays.startDay, end: anchorDays.endDate, options: HKQueryOptions())
+        var quantitySmaplePredicate: NSCompoundPredicate? = nil
+        guard let startDate = calendar.date(byAdding: .month, value: -months, to: beginOfToday, wrappingComponents: false)  else {
+            print("*** Unable to calculate the start date ***")
+            return
+        }
+        let timePredicate = HKQuery.predicateForSamples(withStart: startDate, end: now, options: HKQueryOptions())
         
         if source == .iPhoneItself {
             if let dataSourcePredicate = dataSourcePredicate {
-                quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate, dataSourcePredicate])
+                quantitySmaplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate, dataSourcePredicate])
             }
             else {
                 print("*** Not yet created dataSourcePredicate ***")
             }
         }
         else {
-            quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate])
+            quantitySmaplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate])
         }
         
-        let observerQuery = HKObserverQuery(sampleType: quantityType, predicate: quantitySamplePredicate) { (query, completionHandler, error) in
-            
-            if let error = error {
-                print("*** An error occured while setting up the stepCount observer. \(error.localizedDescription) ***")
-                abort()
+        // Anchor Date
+        // The anchor’s exact date doesn’t matter. So I made it as the start of “Today”
+        // If your "intervalDays" is beyond "1", maybe you should care about "anchorDate"
+        let anchorDate = beginOfToday
+        
+        // intervalComponent:
+        let intervalComponent = NSDateComponents()
+        intervalComponent.day = intervalDays
+        
+        // Create the query
+        // This query just can query one type of data at a time. So if we want query "step", "distance", "calorie" at a time, we must query 3 times.
+        let collectionQuery = HKStatisticsCollectionQuery(quantityType: quantityType,
+                                                          quantitySamplePredicate: quantitySmaplePredicate,
+                                                          options: .cumulativeSum,
+                                                          anchorDate: anchorDate,
+                                                          intervalComponents: intervalComponent as DateComponents)
+        
+        // Set the results handler
+        // The results handler for this query’s initial results.
+        collectionQuery.initialResultsHandler = { query, results, error in
+            guard let stepsCollection = results else {
+                print("*** An error occurred while calculating the statistics: \(String(describing: error?.localizedDescription)) ***")
+                return
             }
             
-            // HealthStore中的数据发生了变化，都会回调到这里。然后在这里再次执行查询？
-            // 所以这里不是观察某些具体数据的变化，而是观察整个HelthKit的变化？
+            stepsCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
+                if let quantity = statistics.sumQuantity() {
+                    // 正常返回，原来有多少，就返回多少，因为时间间隔设置为1了(没有数据那天不会有「对象」，所以要自己提前创建「DayRecord」对象)
+                    
+                    let startDate = statistics.startDate
+                    _ = statistics.endDate
+                    
+                    // QuantityType
+                    var value: Any
+                    switch dataType {
+                    case .step:
+                        value = Int(quantity.doubleValue(for: HKUnit.count()))
+                    case .distance:
+                        value = quantity.doubleValue(for: HKUnit.meterUnit(with: .kilo))
+                    case .calorie:
+                        value = Int(quantity.doubleValue(for: HKUnit.kilocalorie()))
+                    }
+
+                    if timeUnit == .day {
+                        // Update Day Data
+                        for dayRecord in self.dayRecords {
+                            if dayRecord.startDate == startDate {
+                                self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
+                            }
+                        }
+                    }
+                    else if timeUnit == .month {
+                        // Update Month Data
+                        for monthRecord in self.monthRecords {
+                            for dayRecord in monthRecord.days {
+                                // 根据日期判断，是否要将查询到的step加入到dayRecord中
+                                if dayRecord.startDate == startDate {
+                                    self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
+                                }
+                            }
+                        }
+                    }
+                }
+            })
             
-            completion(true, 666, nil)
+            if timeUnit == .day {
+                done(true, self.dayRecords, error)
+            }
+            else if timeUnit == .month {
+                done(true, self.monthRecords, error)
+            }
         }
-        HKHealthStore().execute(observerQuery)
+        
+        // The results handler for monitoring updates to the HealthKit store.
+        collectionQuery.statisticsUpdateHandler = { query, statistics, collection, error in
+            guard let updateCollection = collection else {
+                print("*** An error occurred while statistics update: \(String(describing: error?.localizedDescription)) ***")
+                return
+            }
+            
+            updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
+                if let quantity = statistics.sumQuantity() {
+                    let startDate = statistics.startDate
+                    _ = statistics.endDate
+                    var value: Any
+                    switch dataType {
+                    case .step:
+                        value = Int(quantity.doubleValue(for: HKUnit.count()))
+                    case .distance:
+                        value = quantity.doubleValue(for: HKUnit.meterUnit(with: .kilo))
+                    case .calorie:
+                        value = Int(quantity.doubleValue(for: HKUnit.kilocalorie()))
+                    }
+                    
+                    if timeUnit == .day {
+                        // Update Day Data
+                        for dayRecord in self.dayRecords {
+                            if dayRecord.startDate == startDate {
+                                self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
+                            }
+                        }
+                    }
+                    else if timeUnit == .month {
+                        for monthRecord in self.monthRecords {
+                            for dayRecord in monthRecord.days {
+                                // 根据日期判断，是否要将查询到的step加入到dayRecord中
+                                if dayRecord.startDate == startDate {
+                                    self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+            if timeUnit == .day {
+                done(true, self.stepRecords, error)
+            }
+            else if timeUnit == .month {
+                done(true, self.monthRecords, error)
+            }
+        }
+        
+        HKHealthStore().execute(collectionQuery)
+    }
+    
+    func updateValue(value: Any, dayRecord: DayRecord, dataType: DataType) {
+        switch dataType {
+        case .step:
+            dayRecord.steps = value as! Int
+        case .distance:
+            dayRecord.distance = value as! Double
+        case .calorie:
+            dayRecord.calorie = value as! Int
+        }
     }
 }
 
@@ -521,6 +671,52 @@ extension StepKitManager {
             dayRecords.append(dayRecord)
         }
         return dayRecords
+    }
+}
+
+extension StepKitManager {
+    // MARK: Create Observer Query
+    func createObserverQuery(completion: @escaping (_ success: Bool, _ newSteps: Int, _ error: Error?) -> Swift.Void) {
+        // TODO: Modify to: .iPhoneItself
+        let source: DataSource = .both
+        
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            print("*** Unable to create a step count type ***")
+            return
+        }
+        
+        // Predicate
+        var quantitySamplePredicate: NSCompoundPredicate?
+        
+        let anchorDays = getDayStartDayAndEndDayFor(day: Date())
+        
+        let timePredicate = HKQuery.predicateForSamples(withStart: anchorDays.startDay, end: anchorDays.endDate, options: HKQueryOptions())
+        
+        if source == .iPhoneItself {
+            if let dataSourcePredicate = dataSourcePredicate {
+                quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate, dataSourcePredicate])
+            }
+            else {
+                print("*** Not yet created dataSourcePredicate ***")
+            }
+        }
+        else {
+            quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate])
+        }
+        
+        let observerQuery = HKObserverQuery(sampleType: quantityType, predicate: quantitySamplePredicate) { (query, completionHandler, error) in
+            
+            if let error = error {
+                print("*** An error occured while setting up the stepCount observer. \(error.localizedDescription) ***")
+                abort()
+            }
+            
+            // HealthStore中的数据发生了变化，都会回调到这里。然后在这里再次执行查询？
+            // 所以这里不是观察某些具体数据的变化，而是观察整个HelthKit的变化？
+            
+            completion(true, 666, nil)
+        }
+        HKHealthStore().execute(observerQuery)
     }
 }
 

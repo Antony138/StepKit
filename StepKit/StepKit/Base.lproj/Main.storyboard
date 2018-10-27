@@ -53,11 +53,18 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="irp-do-0Mg">
-                                <rect key="frame" x="166.5" y="20" width="42" height="21"/>
+                                <rect key="frame" x="166.5" y="28" width="42" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LJB-dj-PAS">
+                                <rect key="frame" x="138" y="65" width="99" height="30"/>
+                                <state key="normal" title="Query All Data"/>
+                                <connections>
+                                    <action selector="queryAllData:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nfo-6D-H7M"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -68,9 +75,11 @@
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="top" secondItem="yhE-wm-iyY" secondAttribute="bottom" constant="30" id="PaG-zT-Z3b"/>
                             <constraint firstItem="VZX-N6-UXu" firstAttribute="top" secondItem="Y6d-Da-nud" secondAttribute="bottom" constant="36" id="UwL-NS-LZ5"/>
                             <constraint firstItem="Y6d-Da-nud" firstAttribute="top" secondItem="ddA-uW-VFP" secondAttribute="bottom" constant="36" id="XXi-Lu-yxx"/>
+                            <constraint firstItem="LJB-dj-PAS" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="YGL-2G-Qju"/>
                             <constraint firstItem="VZX-N6-UXu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="csp-RX-cGx"/>
-                            <constraint firstItem="irp-do-0Mg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="f7M-dD-8EP"/>
+                            <constraint firstItem="irp-do-0Mg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="f7M-dD-8EP"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="s30-th-rrN"/>
+                            <constraint firstItem="LJB-dj-PAS" firstAttribute="top" secondItem="irp-do-0Mg" secondAttribute="bottom" constant="16" id="uqn-pk-Ebe"/>
                             <constraint firstItem="ddA-uW-VFP" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="xRx-QJ-p9e"/>
                             <constraint firstItem="DK2-rs-Mle" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="z5X-sQ-wfZ"/>
                         </constraints>
