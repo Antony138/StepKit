@@ -38,7 +38,7 @@ class StepKitManager: NSObject {
     var distanceRecords = [DistanceRecord]()
     var calorieRecords = [CalorieRecord]()
     var monthRecords = [MonthRecord]()
-    // TODO: generate DayRecords when the timeUnit is day
+    var dayRecords = [DayRecord]()
 }
 
 
@@ -156,6 +156,7 @@ extension StepKitManager {
     ///   - error: Return error if something wrong.
     func readSteps(months: Int, timeUnit: TimeUnit, completion: @escaping (_ success: Bool, _ records: [Any], _ error: Error?) -> Swift.Void) {
         generateMonthRecords(months: months)
+        generateDayRecords()
         // The fixed-length time intervals. 1: Get Every Day steps
         let intervalDays = 1
         // Just Get the step of iPhone
@@ -214,22 +215,22 @@ extension StepKitManager {
 
             stepsCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
+                    // 正常返回，原来有多少，就返回多少，因为时间间隔设置为1了(没有数据那天不会有「对象」，所以要自己提前创建「DayRecord」对象)
+                    
+                    let startDate = statistics.startDate
+                    _ = statistics.endDate
+                    let steps = Int(quantity.doubleValue(for: HKUnit.count()))
+
                     if timeUnit == .day {
-                        // 正常返回，原来有多少，就返回多少，因为时间间隔设置为1了
-                        let startDate = statistics.startDate
-                        let endDate = statistics.endDate
-                        let steps = Int(quantity.doubleValue(for: HKUnit.count()))
-                        
-                        let stepRecord = StepRecord(step: steps, startDate: startDate, endDate: endDate)
-                        self.stepRecords.append(stepRecord)
-                        
+                        // Update Day Data
+                        for dayRecord in self.dayRecords {
+                            if dayRecord.startDate == startDate {
+                                dayRecord.steps = steps
+                            }
+                        }
                     }
                     else if timeUnit == .month {
-                        // Update Data
-                        let startDate = statistics.startDate
-                        _ = statistics.endDate
-                        let steps = Int(quantity.doubleValue(for: HKUnit.count()))
-                        
+                        // Update Month Data
                         for monthRecord in self.monthRecords {
                             for dayRecord in monthRecord.days {
                                 // 根据日期判断，是否要将查询到的step加入到dayRecord中
@@ -243,7 +244,7 @@ extension StepKitManager {
             })
             
             if timeUnit == .day {
-                completion(true, self.stepRecords, error)
+                completion(true, self.dayRecords, error)
             }
             else if timeUnit == .month {
                 completion(true, self.monthRecords, error)
@@ -465,6 +466,28 @@ extension StepKitManager {
         HKHealthStore().execute(sourceQuery)
     }
     
+    func generateMonthRecords(months: Int) {
+        for i in 0..<months {
+            let day = Calendar.current.date(byAdding: .month, value: -i, to: startDayOfCurrentMonth())!
+            let anchorDays = getMonthStartDayAndEndDayFor(day: day)
+            let monthRecord = MonthRecord.initWith(days: generateDayRecordsIn(startDayOfMonth: day), startDate: anchorDays.startDay, endDate: anchorDays.endDate)
+            monthRecords.append(monthRecord)
+        }
+    }
+    
+    func generateDayRecords() {
+        // You must call generateMonthRecords() befor call this method
+        // Order: ......the day before yesterday >> yesterday >> today
+        for monthRecord in monthRecords.reversed() {
+            dayRecords.append(contentsOf: monthRecord.days)
+        }
+
+        // Order: today >> yesterday >> the day before yesterday......
+//        for monthRecord in monthRecords {
+//            dayRecords.append(contentsOf: monthRecord.days.reversed())
+//        }
+    }
+    
     func startDayOfCurrentMonth() -> Date {
         return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: Date())))!
     }
@@ -484,15 +507,6 @@ extension StepKitManager {
     func getDayCountOf(day: Date) -> Int {
         let range = Calendar.current.range(of: .day, in: .month, for: day)
         return range!.count
-    }
-    
-    func generateMonthRecords(months: Int) {
-        for i in 0..<months {
-            let day = Calendar.current.date(byAdding: .month, value: -i, to: startDayOfCurrentMonth())!
-            let anchorDays = getMonthStartDayAndEndDayFor(day: day)
-            let monthRecord = MonthRecord.initWith(days: generateDayRecordsIn(startDayOfMonth: day), startDate: anchorDays.startDay, endDate: anchorDays.endDate)
-            monthRecords.append(monthRecord)
-        }
     }
     
     func generateDayRecordsIn(startDayOfMonth: Date) -> [DayRecord] {
