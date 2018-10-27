@@ -106,16 +106,28 @@ extension StepKitManager {
         generateMonthRecords(months: months)
         generateDayRecords()
         
+        let dispatchGroup = DispatchGroup()
+        
+        dispatchGroup.enter()
         queryData(dataType: .step, months: months, timeUnit: timeUnit, source: .iPhoneItself) { (success, records, error) in
-            print("1")
+            dispatchGroup.leave()
         }
+        dispatchGroup.wait()
         
+        dispatchGroup.enter()
         queryData(dataType: .distance, months: months, timeUnit: timeUnit, source: .iPhoneItself) { (success, records, error) in
-            print("2")
+            dispatchGroup.leave()
         }
+        dispatchGroup.wait()
         
+        dispatchGroup.enter()
         queryData(dataType: .calorie, months: months, timeUnit: timeUnit, source: .both) { (success, records, error) in
-            print("3")
+            dispatchGroup.leave()
+        }
+        dispatchGroup.wait()
+        
+        dispatchGroup.notify(queue: .main) {
+            done(true, [Any](), DayRecord(), nil)
         }
     }
     

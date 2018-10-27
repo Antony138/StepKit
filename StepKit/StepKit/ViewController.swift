@@ -17,7 +17,6 @@ class ViewController: UIViewController {
     
     @IBAction func queryAllData(_ sender: UIButton) {
         StepKitManager.shared.queryAllData(months: 1, timeUnit: .day) { (success, records, dayRecord, error) in
-            
         }
     }
     
