@@ -24,6 +24,10 @@
 	<string>We need your steps information.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>We need to write steps to your HealthKit.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
