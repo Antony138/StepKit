@@ -261,11 +261,32 @@ extension StepKitManager {
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
                     let endDate = statistics.endDate
-                    let steps = quantity.doubleValue(for: HKUnit.count())
+                    let steps = Int(quantity.doubleValue(for: HKUnit.count()))
+                    
+                    if timeUnit == .day {
+                        let stepRecord = StepRecord(step: steps, startDate: startDate, endDate: endDate)
+                        self.stepRecords.append(stepRecord)
+                    }
+                    else if timeUnit == .month {
+                        for monthRecord in self.monthRecords {
+                            for dayRecord in monthRecord.days {
+                                // 根据日期判断，是否要将查询到的step加入到dayRecord中
+                                if dayRecord.startDate == startDate {
+                                    dayRecord.steps = steps
+                                }
+                            }
+                        }
+                    }
                     print("statisticsUpdateHandler")
                     print("\(startDate.description(with: .current)) to \(endDate.description(with: .current)) : steps = \(steps)")
                 }
             })
+            if timeUnit == .day {
+                completion(true, self.stepRecords, error)
+            }
+            else if timeUnit == .month {
+                completion(true, self.monthRecords, error)
+            }
         }
         
         HKHealthStore().execute(collectionQuery)

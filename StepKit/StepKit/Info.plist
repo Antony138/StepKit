@@ -20,6 +20,12 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>We need your steps information.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>We need to write steps to your HealthKit.</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -41,11 +47,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSHealthShareUsageDescription</key>
-	<string>We need your steps information.</string>
-	<key>UIFileSharingEnabled</key>
-	<true/>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>We need to write steps to your HealthKit.</string>
 </dict>
 </plist>
