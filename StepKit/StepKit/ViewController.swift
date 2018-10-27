@@ -91,7 +91,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func readStepsRealTime(_ sender: UIButton) {
-        StepKitManager.shared.createObserverQuery { (success, newSteps, error) in
+        StepKitManager.shared.startObserverQuery { (success, newSteps, error) in
             print("readTodayStepsInRealTime CALLBACK")
         }
     }

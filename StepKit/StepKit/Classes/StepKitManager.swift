@@ -98,7 +98,7 @@ extension StepKitManager {
 
 extension StepKitManager {
     // MARK: Create Observer Query
-    func createObserverQuery(completion: @escaping (_ success: Bool, _ newSteps: Int, _ error: Error?) -> Swift.Void) {
+    func startObserverQuery(completion: @escaping (_ success: Bool, _ newSteps: Int, _ error: Error?) -> Swift.Void) {
         // TODO: Modify to: .iPhoneItself
         let source: DataSource = .both
         
