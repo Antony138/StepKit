@@ -17,36 +17,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ddA-uW-VFP">
-                                <rect key="frame" x="148.5" y="318.5" width="78" height="30"/>
-                                <state key="normal" title="Read Steps"/>
-                                <connections>
-                                    <action selector="readSteps:" destination="BYZ-38-t0r" eventType="touchUpInside" id="vgO-dc-nT1"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y6d-Da-nud">
-                                <rect key="frame" x="138" y="384.5" width="99" height="30"/>
-                                <state key="normal" title="Read Distance"/>
-                                <connections>
-                                    <action selector="readDistance:" destination="BYZ-38-t0r" eventType="touchUpInside" id="oCo-TI-4ot"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhE-wm-iyY">
-                                <rect key="frame" x="133" y="258.5" width="109" height="30"/>
+                                <rect key="frame" x="133" y="318.5" width="109" height="30"/>
                                 <state key="normal" title="Write 100 Steps"/>
                                 <connections>
                                     <action selector="write100Steps:" destination="BYZ-38-t0r" eventType="touchUpInside" id="oKR-US-Xs6"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VZX-N6-UXu">
-                                <rect key="frame" x="144" y="450.5" width="87" height="30"/>
-                                <state key="normal" title="Read Calorie"/>
-                                <connections>
-                                    <action selector="readCalorie:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WZ9-Wa-WZ5"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DK2-rs-Mle">
-                                <rect key="frame" x="116.5" y="510.5" width="142" height="30"/>
+                                <rect key="frame" x="116.5" y="428.5" width="142" height="30"/>
                                 <state key="normal" title="Read Step Real Time"/>
                                 <connections>
                                     <action selector="readStepsRealTime:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zpH-cX-tBp"/>
@@ -72,20 +51,14 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Y6d-Da-nud" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BAu-OV-gzw"/>
                             <constraint firstItem="yhE-wm-iyY" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FG9-vN-5hu"/>
-                            <constraint firstItem="DK2-rs-Mle" firstAttribute="top" secondItem="VZX-N6-UXu" secondAttribute="bottom" constant="30" id="PWd-9z-hJM"/>
-                            <constraint firstItem="ddA-uW-VFP" firstAttribute="top" secondItem="yhE-wm-iyY" secondAttribute="bottom" constant="30" id="PaG-zT-Z3b"/>
+                            <constraint firstItem="yhE-wm-iyY" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="MbW-9s-jVF"/>
+                            <constraint firstItem="DK2-rs-Mle" firstAttribute="top" secondItem="yhE-wm-iyY" secondAttribute="bottom" constant="80" id="Rum-Fl-XTp"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="irp-do-0Mg" secondAttribute="trailing" constant="8" id="S7U-n7-k1a"/>
                             <constraint firstItem="irp-do-0Mg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="TzQ-ej-Yga"/>
-                            <constraint firstItem="VZX-N6-UXu" firstAttribute="top" secondItem="Y6d-Da-nud" secondAttribute="bottom" constant="36" id="UwL-NS-LZ5"/>
-                            <constraint firstItem="Y6d-Da-nud" firstAttribute="top" secondItem="ddA-uW-VFP" secondAttribute="bottom" constant="36" id="XXi-Lu-yxx"/>
                             <constraint firstItem="LJB-dj-PAS" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="YGL-2G-Qju"/>
-                            <constraint firstItem="VZX-N6-UXu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="csp-RX-cGx"/>
                             <constraint firstItem="irp-do-0Mg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="f7M-dD-8EP"/>
-                            <constraint firstItem="ddA-uW-VFP" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="s30-th-rrN"/>
                             <constraint firstItem="LJB-dj-PAS" firstAttribute="top" secondItem="irp-do-0Mg" secondAttribute="bottom" constant="38" id="uqn-pk-Ebe"/>
-                            <constraint firstItem="ddA-uW-VFP" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="xRx-QJ-p9e"/>
                             <constraint firstItem="DK2-rs-Mle" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="z5X-sQ-wfZ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
