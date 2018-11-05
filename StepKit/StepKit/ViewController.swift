@@ -22,7 +22,7 @@ class ViewController: UIViewController {
                 
                 self.todayStepLabel.text = "Today Step: \(todayRecord.steps); distace: \(todayRecord.distance); calorie:\(todayRecord.calorie)"
             }
-            
+
             for dayRecord in records.dayRecords {
                 print("\(dayRecord.startDate.description(with: .current)): steps = \(dayRecord.steps); distace: \(dayRecord.distance); calorie:\(dayRecord.calorie)")
             }

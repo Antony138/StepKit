@@ -17,17 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         StepKitManager.shared.authorizeHealthKit { _,_ in }
-        redirectLogToDocuments()
         return true
     }
     
-    func redirectLogToDocuments() {
-        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-        let documentsPath = paths.first!
-        let printPath = documentsPath.appendingFormat("/mylog.log")
-        freopen(printPath.cString(using: String.Encoding.ascii), "a+", stderr)
-    }
-
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
