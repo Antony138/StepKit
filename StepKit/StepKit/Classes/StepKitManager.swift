@@ -88,14 +88,82 @@ extension StepKitManager {
                 }
                 return
             }
-            print("HealthKit Successfully Authorized.")
+            log.info("HealthKit Successfully Authorized.")
+            
+            // Setup Background updates
+            self.startObserverQuery(completion: { (_, _, _) in
+            })
             
             // Use this Predicate filter Data from user input & other apps inpout
             self.getDataSourcePredicate(done: { (dataSourcePredicate) in
                 self.dataSourcePredicate = dataSourcePredicate
-                print("Had Create getDataSourcePredicate.")
+                log.info("Had Create getDataSourcePredicate.")
             })
             completion(success, error)
+        }
+    }
+}
+
+extension StepKitManager {
+    // MARK: Create Observer Query
+    func startObserverQuery(completion: @escaping (_ success: Bool, _ newSteps: Int, _ error: Error?) -> Swift.Void) {
+        // TODO: Modify to: .iPhoneItself
+        let source: DataSource = .iPhoneItself
+        
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            print("*** Unable to create a step count type ***")
+            return
+        }
+        
+        // Predicate
+        var quantitySamplePredicate: NSCompoundPredicate?
+        
+        let anchorDays = getDayStartDayAndEndDayFor(day: Date())
+        
+        let timePredicate = HKQuery.predicateForSamples(withStart: anchorDays.startDay, end: anchorDays.endDate, options: HKQueryOptions())
+        
+        if source == .iPhoneItself {
+            if let dataSourcePredicate = dataSourcePredicate {
+                quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate, dataSourcePredicate])
+            }
+            else {
+                print("*** Not yet created dataSourcePredicate ***")
+            }
+        }
+        else {
+            quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate])
+        }
+        
+        let observerQuery = HKObserverQuery(sampleType: quantityType, predicate: quantitySamplePredicate) { (query, completionHandler, error) in
+            
+            if let error = error {
+                print("*** An error occured while setting up the stepCount observer. \(error.localizedDescription) ***")
+                abort()
+            }
+            
+            // 确认App关闭时候能拿到更新
+            log.info("HKObserverQuery completionHandler: 检测到到数据有更新了")
+            
+            // Do something for the update what you want.
+//            print("*** Receive HKObserverQuery Update, Do something for the update what you want. ***")
+            
+            // If you have subscribed for background updates you must call the completion handler here.
+            completionHandler()
+            
+            // HealthStore中的数据发生了变化，都会回调到这里。然后在这里再次执行查询？
+            // 所以这里不是观察某些具体数据的变化，而是观察整个HelthKit的变化？
+            
+            completion(true, 666, nil)
+        }
+        HKHealthStore().execute(observerQuery)
+        HKHealthStore().enableBackgroundDelivery(for: quantityType, frequency: .immediate) { (success, error) in
+            if success {
+                log.info("*** Enabled background delivery of steps changes(允许 HKObserverQuery Background Delivery了). ***")
+            }
+            else if let error = error {
+                log.info("Failed to enable background delivery of steps changes. ")
+                log.info("Error = \(error)")
+            }
         }
     }
 }
@@ -224,6 +292,7 @@ extension StepKitManager {
                 return
             }
             
+            log.info("initialResultsHandler: HKStatisticsCollectionQuery查询到数据")
             stepsCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     // 正常返回，原来有多少，就返回多少，因为时间间隔设置为1了(没有数据那天不会有「对象」，所以要自己提前创建「DayRecord」对象)
@@ -271,6 +340,8 @@ extension StepKitManager {
                 return
             }
             
+            log.info("statisticsUpdateHandler: HKStatisticsCollectionQuery 检测到到数据有更新")
+            // TODO: 如果关闭App情况下也能检测到，就只用这个就好了
             updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
