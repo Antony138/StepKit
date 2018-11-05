@@ -114,7 +114,7 @@ extension StepKitManager {
     ///   - records: The Data
     ///   - tadayRecord: The data of today
     ///   - error: Return error if something wrong.
-    func queryAllData(months: Int, timeUnit: TimeUnit, done: @escaping (_ success: Bool, _ records: [Any], _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
+    func queryAllData(months: Int, done: @escaping (_ success: Bool, (dayRecords: [DayRecord], monthRecords: [MonthRecord]), _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
         generateMonthRecords(months: months)
         generateDayRecords()
         
@@ -123,21 +123,21 @@ extension StepKitManager {
         let dispatchGroup = DispatchGroup()
         
         dispatchGroup.enter()
-        queryData(dataType: .step, months: months, timeUnit: timeUnit, source: .iPhoneItself) { (success, records, error) in
+        queryData(dataType: .step, months: months, source: .iPhoneItself) { (success, records, error) in
             errors = error
             dispatchGroup.leave()
         }
         dispatchGroup.wait()
         
         dispatchGroup.enter()
-        queryData(dataType: .distance, months: months, timeUnit: timeUnit, source: .iPhoneItself) { (success, records, error) in
+        queryData(dataType: .distance, months: months, source: .iPhoneItself) { (success, records, error) in
             errors = error
             dispatchGroup.leave()
         }
         dispatchGroup.wait()
         
         dispatchGroup.enter()
-        queryData(dataType: .calorie, months: months, timeUnit: timeUnit, source: .both) { (success, records, error) in
+        queryData(dataType: .calorie, months: months, source: .both) { (success, records, error) in
             errors = error
             dispatchGroup.leave()
         }
@@ -145,43 +145,26 @@ extension StepKitManager {
         
         guard errors == nil else {
             print("*** An error occurred while calculating the statistics:\(String(describing: errors))")
-            done(false, [Any](), nil, nil)
+            done(false, ([DayRecord](), [MonthRecord]()), nil, nil)
             return
         }
         
         dispatchGroup.notify(queue: .main) {
-            if timeUnit == .day {
-                done(true, self.dayRecords, self.getTodayRecord(timeUnit: timeUnit), nil)
-            }
-            else {
-                done(true, self.monthRecords, self.getTodayRecord(timeUnit: timeUnit), nil)
-            }
+            done(true, (self.dayRecords, self.monthRecords), self.getTodayRecord(), nil)
         }
     }
     
-    func getTodayRecord(timeUnit: TimeUnit) -> DayRecord?  {
+    func getTodayRecord() -> DayRecord?  {
         var  todayRecord: DayRecord?
-        switch timeUnit {
-        case .day:
-            for day in dayRecords {
-                if day.startDate == Calendar.current.startOfDay(for: Date()) {
-                    todayRecord = day
-                }
-            }
-        case .month:
-            if let monthRecord = monthRecords.first {
-                for dayRecord in monthRecord.days {
-                    if dayRecord.startDate == Calendar.current.startOfDay(for: Date()) {
-                        todayRecord = dayRecord
-                        break
-                    }
-                }
+        for day in dayRecords {
+            if day.startDate == Calendar.current.startOfDay(for: Date()) {
+                todayRecord = day
             }
         }
         return todayRecord
     }
     
-    func queryData(dataType: DataType, months: Int, timeUnit: TimeUnit, source: DataSource, done: @escaping (_ success: Bool, _ records: [Any], _ error: Error?) -> Void) {
+    func queryData(dataType: DataType, months: Int, source: DataSource, done: @escaping (_ success: Bool, _ records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), _ error: Error?) -> Void) {
         // The fixed-length time intervals. 1: Get Every Day steps
         let intervalDays = 1
         
@@ -259,35 +242,26 @@ extension StepKitManager {
                         value = Int(quantity.doubleValue(for: HKUnit.kilocalorie()))
                     }
 
-                    if timeUnit == .day {
-                        // Update Day Data
-                        for dayRecord in self.dayRecords {
+                    // Update Day Data
+                    for dayRecord in self.dayRecords {
+                        if dayRecord.startDate == startDate {
+                            self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
+                        }
+                    }
+
+                    // Update Month Data
+                    for monthRecord in self.monthRecords {
+                        for dayRecord in monthRecord.days {
+                            // 根据日期判断，是否要将查询到的step加入到dayRecord中
                             if dayRecord.startDate == startDate {
                                 self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
                             }
                         }
                     }
-                    else if timeUnit == .month {
-                        // Update Month Data
-                        for monthRecord in self.monthRecords {
-                            for dayRecord in monthRecord.days {
-                                // 根据日期判断，是否要将查询到的step加入到dayRecord中
-                                if dayRecord.startDate == startDate {
-                                    self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
-                                }
-                            }
-                        }
-                    }
                 }
             })
-            
-            if timeUnit == .day {
-                done(true, self.dayRecords, error)
-                
-            }
-            else if timeUnit == .month {
-                done(true, self.monthRecords, error)
-            }
+
+            done(true, (self.dayRecords, self.monthRecords), error)
         }
         
         // The results handler for monitoring updates to the HealthKit store.
@@ -311,32 +285,25 @@ extension StepKitManager {
                         value = Int(quantity.doubleValue(for: HKUnit.kilocalorie()))
                     }
                     
-                    if timeUnit == .day {
-                        // Update Day Data
-                        for dayRecord in self.dayRecords {
+                    // Update Day Data
+                    for dayRecord in self.dayRecords {
+                        if dayRecord.startDate == startDate {
+                            self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
+                        }
+                    }
+
+                    for monthRecord in self.monthRecords {
+                        for dayRecord in monthRecord.days {
+                            // 根据日期判断，是否要将查询到的step加入到dayRecord中
                             if dayRecord.startDate == startDate {
                                 self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
                             }
                         }
                     }
-                    else if timeUnit == .month {
-                        for monthRecord in self.monthRecords {
-                            for dayRecord in monthRecord.days {
-                                // 根据日期判断，是否要将查询到的step加入到dayRecord中
-                                if dayRecord.startDate == startDate {
-                                    self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
-                                }
-                            }
-                        }
-                    }
                 }
             })
-            if timeUnit == .day {
-                done(true, self.stepRecords, error)
-            }
-            else if timeUnit == .month {
-                done(true, self.monthRecords, error)
-            }
+
+            done(true, (self.dayRecords, self.monthRecords), error)
         }
         
         HKHealthStore().execute(collectionQuery)

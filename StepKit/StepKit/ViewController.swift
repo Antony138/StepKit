@@ -16,19 +16,20 @@ class ViewController: UIViewController {
     }
     
     @IBAction func queryAllData(_ sender: UIButton) {
-        StepKitManager.shared.queryAllData(months: 2, timeUnit: .month) { (success, records, todayRecord, error) in
+        StepKitManager.shared.queryAllData(months: 2) { (success, records, todayRecord, error) in
             if let todayRecord = todayRecord {
                 print("Today: steps: \(todayRecord.steps); distace: \(todayRecord.distance); calorie:\(todayRecord.calorie)")
                 
                 self.todayStepLabel.text = "Today Step: \(todayRecord.steps); distace: \(todayRecord.distance); calorie:\(todayRecord.calorie)"
             }
             
-            // 不同的timeUnit，返回不同类型的array，要转换一下
-            for dayRecord: DayRecord in records as? [DayRecord] ?? [DayRecord]() {
+            for dayRecord in records.dayRecords {
                 print("\(dayRecord.startDate.description(with: .current)): steps = \(dayRecord.steps); distace: \(dayRecord.distance); calorie:\(dayRecord.calorie)")
             }
             
-            for monthRecord: MonthRecord in records as? [MonthRecord] ?? [MonthRecord]() {
+            print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            
+            for monthRecord in records.monthRecords {
                 print("Month Total: \(monthRecord.startDate.description(with: .current)): steps = \(monthRecord.steps); \(monthRecord.distance); \(monthRecord.calorie)")
                 
                 for day in monthRecord.days {
