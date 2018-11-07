@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        StepKitManager.shared.delegate = self
     }
     
     @IBAction func queryAllData(_ sender: UIButton) {

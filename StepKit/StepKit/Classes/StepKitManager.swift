@@ -296,7 +296,7 @@ extension StepKitManager {
                 return
             }
             
-            log.info("initialResultsHandler: HKStatisticsCollectionQuery查询到数据")
+            log.info("「initialResultsHandler」: HKStatisticsCollectionQuery查询到数据")
             stepsCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     // 因为时间间隔设置为1——没有数据那天不会有「对象」，所以要自己提前创建「DayRecord」对象
@@ -346,7 +346,7 @@ extension StepKitManager {
                 return
             }
             
-            log.info("statisticsUpdateHandler: HKStatisticsCollectionQuery 检测到到数据有更新")
+            log.info("「statisticsUpdateHandler」: HKStatisticsCollectionQuery 检测到到数据有更新")
             updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
