@@ -336,6 +336,7 @@ extension StepKitManager {
             })
 
             done(true, (self.dayRecords, self.monthRecords), error)
+            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), done: { (sueecss, error) in })
         }
         
         // The results handler for monitoring updates to the HealthKit store.
@@ -346,7 +347,7 @@ extension StepKitManager {
             }
             
             log.info("statisticsUpdateHandler: HKStatisticsCollectionQuery 检测到到数据有更新")
-            // TODO: 如果关闭App情况下也能检测到，就只用这个就好了
+            // Appb关闭的情况下这里不会回调, 所以App关闭的情况下, 要借助Observer Query
             updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
@@ -380,6 +381,7 @@ extension StepKitManager {
             })
 
             done(true, (self.dayRecords, self.monthRecords), error)
+            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), done: { (sueecss, error) in })
         }
         
         HKHealthStore().execute(collectionQuery)
@@ -479,66 +481,5 @@ extension StepKitManager {
             dayRecords.append(dayRecord)
         }
         return dayRecords
-    }
-}
-
-extension StepKitManager {
-    // MARK: Create Observer Query
-    func createObserverQuery(completion: @escaping (_ success: Bool, _ newSteps: Int, _ error: Error?) -> Swift.Void) {
-        // TODO: Modify to: .iPhoneItself
-        let source: DataSource = .both
-        
-        guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
-            print("*** Unable to create a step count type ***")
-            return
-        }
-        
-        // Predicate
-        var quantitySamplePredicate: NSCompoundPredicate?
-        
-        let anchorDays = getDayStartDayAndEndDayFor(day: Date())
-        
-        let timePredicate = HKQuery.predicateForSamples(withStart: anchorDays.startDay, end: anchorDays.endDate, options: HKQueryOptions())
-        
-        if source == .iPhoneItself {
-            if let dataSourcePredicate = dataSourcePredicate {
-                quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate, dataSourcePredicate])
-            }
-            else {
-                print("*** Not yet created dataSourcePredicate ***")
-            }
-        }
-        else {
-            quantitySamplePredicate = NSCompoundPredicate(type: .and, subpredicates: [timePredicate])
-        }
-        
-        let observerQuery = HKObserverQuery(sampleType: quantityType, predicate: quantitySamplePredicate) { (query, completionHandler, error) in
-            
-            if let error = error {
-                print("*** An error occured while setting up the stepCount observer. \(error.localizedDescription) ***")
-                abort()
-            }
-            
-            // HealthStore中的数据发生了变化，都会回调到这里。然后在这里再次执行查询？
-            // 所以这里不是观察某些具体数据的变化，而是观察整个HelthKit的变化？
-            
-            completion(true, 666, nil)
-        }
-        HKHealthStore().execute(observerQuery)
-    }
-}
-
-extension StepKitManager {
-    // MARK: Write Steps into HealthKit
-    func writeStepsToHealthKit() {
-        let now = Date()
-        let startOfDay = Calendar.current.startOfDay(for: now)
-        let stepsQuantityType = HKQuantityType.quantityType(forIdentifier: .stepCount)
-        let unit = HKUnit.count()
-        let quantity = HKQuantity(unit: unit, doubleValue: 100)
-        let sample = HKQuantitySample(type: stepsQuantityType!, quantity: quantity, start: startOfDay, end: now)
-        HKHealthStore().save(sample) { (success, error) in
-            print("Saving steps to healthStore - success:\(success)");
-        }
     }
 }
