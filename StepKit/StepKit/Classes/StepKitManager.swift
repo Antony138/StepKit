@@ -6,10 +6,6 @@
 //  Copyright © 2018 CONTI Inc. All rights reserved.
 //
 
-enum TimeUnit {
-    case day, month
-}
-
 enum DataSource {
     case iPhoneItself
     case otherSource // Include manual enter, other app enter etc.
@@ -176,10 +172,9 @@ extension StepKitManager {
     ///
     /// - Parameters:
     ///   - months: How many months do you want to read.
-    ///   - timeUnit: Deciding what type to return(DayRecor or MonthRecord)
     ///   - done: The callback.
     ///   - success: The result status of the callback.
-    ///   - records: The Data
+    ///   - (dayRecords, monthRecords): A Tuple of the Feedback Data
     ///   - tadayRecord: The data of today
     ///   - error: Return error if something wrong.
     func queryAllData(months: Int, done: @escaping (_ success: Bool, (dayRecords: [DayRecord], monthRecords: [MonthRecord]), _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
