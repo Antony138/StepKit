@@ -6,6 +6,10 @@
 //  Copyright © 2018 CONTI Inc. All rights reserved.
 //
 
+protocol StepKitUploadDelegate {
+    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), done: @escaping (_ success: Bool, _ error: Error?) -> Void)
+}
+
 enum DataSource {
     case iPhoneItself
     case otherSource // Include manual enter, other app enter etc.
@@ -36,6 +40,10 @@ class StepKitManager: NSObject {
     // Feedback
     var monthRecords = [MonthRecord]()
     var dayRecords = [DayRecord]()
+    
+    var delegate: StepKitUploadDelegate?
+    
+    var userInputMonths = 0
 }
 
 
@@ -84,8 +92,7 @@ extension StepKitManager {
             log.info("HealthKit Successfully Authorized.")
             
             // Setup Background updates
-            self.startObserverQuery(completion: { (_, _, _) in
-            })
+            self.startObserverQuery()
             
             // Use this Predicate filter Data from user input & other apps inpout
             self.getDataSourcePredicate(done: { (dataSourcePredicate) in
@@ -99,8 +106,7 @@ extension StepKitManager {
 
 extension StepKitManager {
     // MARK: Create Observer Query
-    func startObserverQuery(completion: @escaping (_ success: Bool, _ newSteps: Int, _ error: Error?) -> Swift.Void) {
-        // TODO: Modify to: .iPhoneItself
+    func startObserverQuery() {
         let source: DataSource = .iPhoneItself
         
         guard let quantityType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
@@ -134,19 +140,25 @@ extension StepKitManager {
                 abort()
             }
             
-            // 确认App关闭时候能拿到更新
+            // 已确认: App关闭时候能拿到更新
             log.info("HKObserverQuery completionHandler: 检测到到数据有更新了")
+            // HealthKit had update, Query Again
+            self.queryAllData(months: self.userInputMonths, done: { (success, records, todayRecord, error) in
+                
+                if let error = error {
+                    print("*** An error occured while queryAllData in observer. \(error.localizedDescription) ***")
+                    abort()
+                }
+                
+                self.delegate?.upload(records: records, done: { (success, error) in})
+                
+                if let todayRecord = todayRecord {
+                    log.info("更新后查到的(今天)数据: step: \(todayRecord.steps); distance: \(todayRecord.distance); calorie: \(todayRecord.calorie)")
+                }
+            })
             
-            // Do something for the update what you want.
-//            print("*** Receive HKObserverQuery Update, Do something for the update what you want. ***")
-            
-            // If you have subscribed for background updates you must call the completion handler here.
+            // If you have subscribed for background updates you must call the completion handler here.(官方文档注释)
             completionHandler()
-            
-            // HealthStore中的数据发生了变化，都会回调到这里。然后在这里再次执行查询？
-            // 所以这里不是观察某些具体数据的变化，而是观察整个HelthKit的变化？
-            
-            completion(true, 666, nil)
         }
         HKHealthStore().execute(observerQuery)
         HKHealthStore().enableBackgroundDelivery(for: quantityType, frequency: .immediate) { (success, error) in
@@ -177,6 +189,7 @@ extension StepKitManager {
     func queryAllData(months: Int, done: @escaping (_ success: Bool, (dayRecords: [DayRecord], monthRecords: [MonthRecord]), _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
         generateMonthRecords(months: months)
         generateDayRecords()
+        userInputMonths = months
         
         var errors: Error?
         

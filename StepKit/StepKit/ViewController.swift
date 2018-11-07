@@ -50,3 +50,9 @@ class ViewController: UIViewController {
     }
 }
 
+extension ViewController: StepKitUploadDelegate {
+    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), done: @escaping (Bool, Error?) -> Void) {
+            log.info("在ViewController拿到了要upload的数据的回调, 可以在这里实现数据具体上传到服务器的方法")
+    }
+}
+
