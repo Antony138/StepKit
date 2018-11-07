@@ -34,9 +34,6 @@ class StepKitManager: NSObject {
     let beginOfToday = NSCalendar.current.startOfDay(for: Date())
     
     // Feedback
-    var stepRecords = [StepRecord]()
-    var distanceRecords = [DistanceRecord]()
-    var calorieRecords = [CalorieRecord]()
     var monthRecords = [MonthRecord]()
     var dayRecords = [DayRecord]()
 }
