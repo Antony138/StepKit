@@ -40,13 +40,9 @@ class ViewController: UIViewController {
     }
     
     @IBAction func readStepsRealTime(_ sender: UIButton) {
-        StepKitManager.shared.createObserverQuery { (success, newSteps, error) in
-            print("readTodayStepsInRealTime CALLBACK")
-        }
     }
     
     @IBAction func write100Steps(_ sender: UIButton) {
-        StepKitManager.shared.writeStepsToHealthKit()
     }
 }
 

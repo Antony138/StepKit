@@ -75,10 +75,9 @@ extension StepKitManager {
         // 3. Prepare a list of types you want HealthKit to read and write
         // HKObjectType.workoutType() : is a special kind of HKObjectType. It represents any kind of workout.
         let healthKitTypesToRead: Set<HKObjectType> = [steps, distance, energy]
-        let healthKitTypesToWrite: Set<HKSampleType> = [steps]
-        
+
         // 4. Request Authorization
-        HKHealthStore().requestAuthorization(toShare: healthKitTypesToWrite, read: healthKitTypesToRead) { (success, error) in
+        HKHealthStore().requestAuthorization(toShare: nil, read: healthKitTypesToRead) { (success, error) in
             guard success else {
                 let baseMessage = "HealthKit Authorization Failed"
                 if let error = error {
@@ -300,7 +299,7 @@ extension StepKitManager {
             log.info("initialResultsHandler: HKStatisticsCollectionQuery查询到数据")
             stepsCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
-                    // 正常返回，原来有多少，就返回多少，因为时间间隔设置为1了(没有数据那天不会有「对象」，所以要自己提前创建「DayRecord」对象)
+                    // 因为时间间隔设置为1——没有数据那天不会有「对象」，所以要自己提前创建「DayRecord」对象
                     
                     let startDate = statistics.startDate
                     _ = statistics.endDate
@@ -339,6 +338,7 @@ extension StepKitManager {
             self.delegate?.upload(records: (self.dayRecords, self.monthRecords), done: { (sueecss, error) in })
         }
         
+        // 这个回调在关闭App之后不起作用，所以还需要Observer Query
         // The results handler for monitoring updates to the HealthKit store.
         collectionQuery.statisticsUpdateHandler = { query, statistics, collection, error in
             guard let updateCollection = collection else {
@@ -347,7 +347,6 @@ extension StepKitManager {
             }
             
             log.info("statisticsUpdateHandler: HKStatisticsCollectionQuery 检测到到数据有更新")
-            // Appb关闭的情况下这里不会回调, 所以App关闭的情况下, 要借助Observer Query
             updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
