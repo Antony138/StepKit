@@ -48,6 +48,10 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: StepKitUploadDelegate {
+    func logToSandBox(message: String) {
+        log.info(message)
+    }
+    
     func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?, done: @escaping (Bool, Error?) -> Void) {
         log.info("在ViewController拿到了要upload的数据的回调, 可以在这里实现数据具体上传到服务器的方法")
         if let today = today {

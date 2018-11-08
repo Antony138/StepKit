@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,20 +17,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhE-wm-iyY">
-                                <rect key="frame" x="133" y="318.5" width="109" height="30"/>
-                                <state key="normal" title="Write 100 Steps"/>
-                                <connections>
-                                    <action selector="write100Steps:" destination="BYZ-38-t0r" eventType="touchUpInside" id="oKR-US-Xs6"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DK2-rs-Mle">
-                                <rect key="frame" x="116.5" y="428.5" width="142" height="30"/>
-                                <state key="normal" title="Read Step Real Time"/>
-                                <connections>
-                                    <action selector="readStepsRealTime:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zpH-cX-tBp"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="irp-do-0Mg">
                                 <rect key="frame" x="8" y="28" width="359" height="70"/>
                                 <constraints>
@@ -51,15 +37,11 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="yhE-wm-iyY" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FG9-vN-5hu"/>
-                            <constraint firstItem="yhE-wm-iyY" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="MbW-9s-jVF"/>
-                            <constraint firstItem="DK2-rs-Mle" firstAttribute="top" secondItem="yhE-wm-iyY" secondAttribute="bottom" constant="80" id="Rum-Fl-XTp"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="irp-do-0Mg" secondAttribute="trailing" constant="8" id="S7U-n7-k1a"/>
                             <constraint firstItem="irp-do-0Mg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="TzQ-ej-Yga"/>
                             <constraint firstItem="LJB-dj-PAS" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="YGL-2G-Qju"/>
                             <constraint firstItem="irp-do-0Mg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="f7M-dD-8EP"/>
                             <constraint firstItem="LJB-dj-PAS" firstAttribute="top" secondItem="irp-do-0Mg" secondAttribute="bottom" constant="38" id="uqn-pk-Ebe"/>
-                            <constraint firstItem="DK2-rs-Mle" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="z5X-sQ-wfZ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

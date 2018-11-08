@@ -8,6 +8,7 @@
 
 protocol StepKitUploadDelegate {
     func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?, done: @escaping (_ success: Bool, _ error: Error?) -> Void)
+    func logToSandBox(message: String)
 }
 
 enum DataSource {
@@ -88,7 +89,7 @@ extension StepKitManager {
                 }
                 return
             }
-            log.info("HealthKit Successfully Authorized.")
+            self.delegate?.logToSandBox(message: "HealthKit Successfully Authorized.")
             
             // Setup Background updates
             self.startObserverQuery()
@@ -96,7 +97,7 @@ extension StepKitManager {
             // Use this Predicate filter Data from user input & other apps inpout
             self.getDataSourcePredicate(done: { (dataSourcePredicate) in
                 self.dataSourcePredicate = dataSourcePredicate
-                log.info("Had Create getDataSourcePredicate.")
+                self.delegate?.logToSandBox(message: "Had Create getDataSourcePredicate.")
             })
             completion(success, error)
         }
@@ -140,17 +141,13 @@ extension StepKitManager {
             }
             
             // 已确认: App关闭时候能拿到更新
-            log.info("HKObserverQuery completionHandler: 检测到到数据有更新了")
+            self.delegate?.logToSandBox(message: "「HKObserverQuery completionHandler」: 检测到到数据有更新了")
             // HealthKit had update, Query Again
             self.queryAllData(months: self.userInputMonths, done: { (success, records, todayRecord, error) in
                 
                 if let error = error {
                     print("*** An error occured while queryAllData in observer. \(error.localizedDescription) ***")
                     abort()
-                }
-                
-                if let todayRecord = todayRecord {
-                    log.info("更新后查到的(今天)数据: step: \(todayRecord.steps); distance: \(todayRecord.distance); calorie: \(todayRecord.calorie)")
                 }
             })
             
@@ -160,11 +157,11 @@ extension StepKitManager {
         HKHealthStore().execute(observerQuery)
         HKHealthStore().enableBackgroundDelivery(for: quantityType, frequency: .immediate) { (success, error) in
             if success {
-                log.info("*** Enabled background delivery of steps changes(允许 HKObserverQuery Background Delivery了). ***")
+                self.delegate?.logToSandBox(message: "*** Enabled background delivery of steps changes(允许 HKObserverQuery Background Delivery了). ***")
             }
             else if let error = error {
-                log.info("Failed to enable background delivery of steps changes. ")
-                log.info("Error = \(error)")
+                self.delegate?.logToSandBox(message: "Failed to enable background delivery of steps changes. ")
+                self.delegate?.logToSandBox(message: "Error = \(error)")
             }
         }
     }
@@ -296,7 +293,7 @@ extension StepKitManager {
                 return
             }
             
-            log.info("「initialResultsHandler」: HKStatisticsCollectionQuery查询到数据")
+            self.delegate?.logToSandBox(message: "「initialResultsHandler」: HKStatisticsCollectionQuery查询到数据")
             stepsCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     // 因为时间间隔设置为1——没有数据那天不会有「对象」，所以要自己提前创建「DayRecord」对象
@@ -345,7 +342,7 @@ extension StepKitManager {
                 return
             }
             
-            log.info("「statisticsUpdateHandler」: HKStatisticsCollectionQuery 检测到到数据有更新")
+            self.delegate?.logToSandBox(message: "「statisticsUpdateHandler」: HKStatisticsCollectionQuery 检测到到数据有更新")
             updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
                 if let quantity = statistics.sumQuantity() {
                     let startDate = statistics.startDate
