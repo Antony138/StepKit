@@ -7,7 +7,7 @@
 //
 
 protocol StepKitUploadDelegate {
-    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), done: @escaping (_ success: Bool, _ error: Error?) -> Void)
+    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?, done: @escaping (_ success: Bool, _ error: Error?) -> Void)
 }
 
 enum DataSource {
@@ -116,7 +116,7 @@ extension StepKitManager {
         // Predicate
         var quantitySamplePredicate: NSCompoundPredicate?
         
-        let anchorDays = getDayStartDayAndEndDayFor(day: Date())
+        let anchorDays = getDay_StartDay_EndDayFor(day: Date())
         
         let timePredicate = HKQuery.predicateForSamples(withStart: anchorDays.startDay, end: anchorDays.endDate, options: HKQueryOptions())
         
@@ -148,8 +148,6 @@ extension StepKitManager {
                     print("*** An error occured while queryAllData in observer. \(error.localizedDescription) ***")
                     abort()
                 }
-                
-                self.delegate?.upload(records: records, done: { (success, error) in})
                 
                 if let todayRecord = todayRecord {
                     log.info("更新后查到的(今天)数据: step: \(todayRecord.steps); distance: \(todayRecord.distance); calorie: \(todayRecord.calorie)")
@@ -223,6 +221,8 @@ extension StepKitManager {
         
         dispatchGroup.notify(queue: .main) {
             done(true, (self.dayRecords, self.monthRecords), self.getTodayRecord(), nil)
+            // 在这里回调delegate, 因为无论是HKObserverQuery更新的查询，还是常规的HKStatisticsCollectionQuery查询, 都走到这里
+            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord(), done: { (success, error) in })
         }
     }
     
@@ -335,7 +335,6 @@ extension StepKitManager {
             })
 
             done(true, (self.dayRecords, self.monthRecords), error)
-            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), done: { (sueecss, error) in })
         }
         
         // 这个回调在关闭App之后不起作用，所以还需要Observer Query
@@ -380,7 +379,6 @@ extension StepKitManager {
             })
 
             done(true, (self.dayRecords, self.monthRecords), error)
-            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), done: { (sueecss, error) in })
         }
         
         HKHealthStore().execute(collectionQuery)
@@ -426,9 +424,9 @@ extension StepKitManager {
     func generateMonthRecords(months: Int) {
         monthRecords.removeAll()
         for i in 0..<months {
-            let day = Calendar.current.date(byAdding: .month, value: -i, to: startDayOfCurrentMonth())!
-            let anchorDays = getMonthStartDayAndEndDayFor(day: day)
-            let monthRecord = MonthRecord.initWith(days: generateDayRecordsIn(startDayOfMonth: day), startDate: anchorDays.startDay, endDate: anchorDays.endDate)
+            let startDayOfMonth = Calendar.current.date(byAdding: .month, value: -i, to: startDayOfCurrentMonth())!
+            let anchorDays = getMonth_StartDay_EndDayFor(day: startDayOfMonth)
+            let monthRecord = MonthRecord(days: generateDayRecordsIn(startDayOfMonth: startDayOfMonth), startDate: anchorDays.startDay, endDate: anchorDays.endDate)
             monthRecords.append(monthRecord)
         }
     }
@@ -451,19 +449,19 @@ extension StepKitManager {
         return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: Date())))!
     }
     
-    func getMonthStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
+    func getMonth_StartDay_EndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
         let startDay = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: day)))!
         let endDay = Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: startDay)!
         return (startDay, endDay)
     }
     
-    func getDayStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
+    func getDay_StartDay_EndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
         let startDay = Calendar.current.startOfDay(for: day)
         let endDay = Calendar.current.date(byAdding: DateComponents(day: 1), to: startDay)!
         return (startDay, endDay)
     }
     
-    func getDayCountOf(day: Date) -> Int {
+    func getDaysOfMonthFor(day: Date) -> Int {
         let range = Calendar.current.range(of: .day, in: .month, for: day)
         return range!.count
     }
@@ -471,12 +469,12 @@ extension StepKitManager {
     func generateDayRecordsIn(startDayOfMonth: Date) -> [DayRecord] {
         var dayRecords = [DayRecord]()
         
-        let dayCount = getDayCountOf(day: startDayOfMonth)
+        let dayCount = getDaysOfMonthFor(day: startDayOfMonth)
         
         for i in 0..<dayCount {
             let dayInMonth = Calendar.current.date(byAdding: DateComponents(day: i), to: startDayOfMonth)!
-            let anchorDays = getDayStartDayAndEndDayFor(day: dayInMonth)
-            let dayRecord = DayRecord.initWith(startDate: anchorDays.startDay, endDate: anchorDays.endDate)
+            let anchorDays = getDay_StartDay_EndDayFor(day: dayInMonth)
+            let dayRecord = DayRecord(startDate: anchorDays.startDay, endDate: anchorDays.endDate)
             dayRecords.append(dayRecord)
         }
         return dayRecords

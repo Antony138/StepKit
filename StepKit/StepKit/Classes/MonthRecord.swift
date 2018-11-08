@@ -34,11 +34,10 @@ class MonthRecord: NSObject {
     var startDate = Date()
     var endDate = Date()
     
-    class func initWith(days: [DayRecord], startDate: Date, endDate: Date) -> MonthRecord {
-        let monthRecord = MonthRecord()
-        monthRecord.days = days
-        monthRecord.startDate = startDate
-        monthRecord.endDate = endDate
-        return monthRecord
+    convenience init(days: [DayRecord], startDate: Date, endDate: Date) {
+        self.init()
+        self.days = days
+        self.startDate = startDate
+        self.endDate = endDate
     }
 }
