@@ -421,7 +421,6 @@ extension StepKitManager {
     func generateMonthRecords(months: Int) {
         monthRecords.removeAll()
         for i in 0..<months {
-            let day = Calendar.current.date(byAdding: .month, value: -i, to: Date.startDayOfThisMonth)!
             let startDayOfMonth = Calendar.current.date(byAdding: .month, value: -i, to: Date.startDayOfThisMonth)!
             let anchorDays = getMonth_StartDay_EndDayFor(day: startDayOfMonth)
             let monthRecord = MonthRecord(days: generateDayRecordsIn(startDayOfMonth: startDayOfMonth), startDate: anchorDays.startDay, endDate: anchorDays.endDate)
