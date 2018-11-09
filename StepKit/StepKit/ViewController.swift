@@ -10,6 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
     @IBOutlet weak var todayStepLabel: UILabel!
+    @IBOutlet weak var liveSteps: UILabel!
+    @IBOutlet weak var liveDistance: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,11 +41,13 @@ class ViewController: UIViewController {
             }
         }
     }
-    
-    @IBAction func readStepsRealTime(_ sender: UIButton) {
-    }
-    
-    @IBAction func write100Steps(_ sender: UIButton) {
+    @IBAction func liveTracking(_ sender: UIButton) {
+        CoreMotionManager.shared.startLiveTrackingTodayData { (stepsStr, distanceStr) in
+            DispatchQueue.main.async {
+                self.liveSteps.text = stepsStr
+                self.liveDistance.text = distanceStr
+            }
+        }
     }
 }
 

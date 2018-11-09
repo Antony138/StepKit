@@ -16,6 +16,7 @@
 		0AA071DA21688D3D00142E4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AA071D921688D3D00142E4C /* Assets.xcassets */; };
 		0AA071DD21688D3D00142E4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AA071DB21688D3D00142E4C /* LaunchScreen.storyboard */; };
 		0AA071E72168969E00142E4C /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AA071E62168969E00142E4C /* HealthKit.framework */; };
+		0AB68D56219592B0005BD855 /* CoreMotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB68D55219592B0005BD855 /* CoreMotionManager.swift */; };
 		0ACD1C052190822F00041E38 /* XCGLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AE1D288219080620050FC3B /* XCGLogger.framework */; };
 		0ACD1C062190822F00041E38 /* XCGLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0AE1D288219080620050FC3B /* XCGLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0ACD1C0A2190825200041E38 /* ObjcExceptionBridging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AE1D298219080620050FC3B /* ObjcExceptionBridging.framework */; };
@@ -152,6 +153,7 @@
 		0AA071DE21688D3D00142E4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AA071E42168969E00142E4C /* StepKit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepKit.entitlements; sourceTree = "<group>"; };
 		0AA071E62168969E00142E4C /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		0AB68D55219592B0005BD855 /* CoreMotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CoreMotionManager.swift; path = Classes/CoreMotionManager.swift; sourceTree = "<group>"; };
 		0AE1D278219080620050FC3B /* XCGLogger.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XCGLogger.xcodeproj; path = ../../XCGLogger/XCGLogger.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -174,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				0A4F91E1217AD80E0049ACC0 /* StepKitManager.swift */,
+				0AB68D55219592B0005BD855 /* CoreMotionManager.swift */,
 				0A4F91E0217AD7BA0049ACC0 /* Model */,
 			);
 			name = StepKit;
@@ -427,6 +430,7 @@
 				0A4F91EC217AD8170049ACC0 /* MonthRecord.swift in Sources */,
 				0AA071D321688D3B00142E4C /* AppDelegate.swift in Sources */,
 				0A4F91E2217AD80E0049ACC0 /* StepKitManager.swift in Sources */,
+				0AB68D56219592B0005BD855 /* CoreMotionManager.swift in Sources */,
 				0A4F91E9217AD8170049ACC0 /* DayRecord.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

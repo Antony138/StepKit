@@ -34,18 +34,45 @@
                                     <action selector="queryAllData:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nfo-6D-H7M"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d2I-b7-gkd">
+                                <rect key="frame" x="142" y="318.5" width="91" height="30"/>
+                                <state key="normal" title="Live Tracking"/>
+                                <connections>
+                                    <action selector="liveTracking:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nC5-Up-qlH"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZFF-v3-2tU">
+                                <rect key="frame" x="166.5" y="429.5" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zFd-8R-3vc">
+                                <rect key="frame" x="166.5" y="378.5" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="zFd-8R-3vc" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="8x8-8p-f8Q"/>
+                            <constraint firstItem="d2I-b7-gkd" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Foj-le-mPg"/>
+                            <constraint firstItem="ZFF-v3-2tU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="RZt-Dk-YXl"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="irp-do-0Mg" secondAttribute="trailing" constant="8" id="S7U-n7-k1a"/>
                             <constraint firstItem="irp-do-0Mg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="TzQ-ej-Yga"/>
                             <constraint firstItem="LJB-dj-PAS" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="YGL-2G-Qju"/>
+                            <constraint firstItem="zFd-8R-3vc" firstAttribute="top" secondItem="d2I-b7-gkd" secondAttribute="bottom" constant="30" id="aWY-24-TDr"/>
                             <constraint firstItem="irp-do-0Mg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="f7M-dD-8EP"/>
+                            <constraint firstItem="ZFF-v3-2tU" firstAttribute="top" secondItem="zFd-8R-3vc" secondAttribute="bottom" constant="30" id="hEr-IF-z63"/>
+                            <constraint firstItem="d2I-b7-gkd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hat-oW-iO2"/>
                             <constraint firstItem="LJB-dj-PAS" firstAttribute="top" secondItem="irp-do-0Mg" secondAttribute="bottom" constant="38" id="uqn-pk-Ebe"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="liveDistance" destination="ZFF-v3-2tU" id="X8F-BA-TI8"/>
+                        <outlet property="liveSteps" destination="zFd-8R-3vc" id="jSy-Qp-eQE"/>
                         <outlet property="todayStepLabel" destination="irp-do-0Mg" id="s4p-pP-4Qk"/>
                     </connections>
                 </viewController>
