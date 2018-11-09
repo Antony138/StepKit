@@ -9,36 +9,24 @@
 import Foundation
 
 class MonthRecord: NSObject {
-    var steps: Int {
-        var sum = 0
-        days.forEach {
-            sum += $0.steps
-        }
-        return sum
-    }
-    var distance: Double {
-        var sum = 0.0
-        days.forEach {
-            sum += $0.distance
-        }
-        return sum
-    }
-    var calorie: Int {
-        var sum = 0
-        days.forEach {
-            sum += $0.calorie
-        }
-        return sum
-    }
     var days = [DayRecord]()
     var startDate = Date()
     var endDate = Date()
     
-    class func initWith(days: [DayRecord], startDate: Date, endDate: Date) -> MonthRecord {
-        let monthRecord = MonthRecord()
-        monthRecord.days = days
-        monthRecord.startDate = startDate
-        monthRecord.endDate = endDate
-        return monthRecord
+    var steps: Int {
+        return days.reduce(0, { $0 + $1.steps })
+    }
+    var distance: Double {
+        return days.reduce(0, { $0 + $1.distance })
+    }
+    var calorie: Int {
+        return days.reduce(0, { $0 + $1.calorie })
+    }
+    
+    convenience init(days: [DayRecord], startDate: Date, endDate: Date) {
+        self.init()
+        self.days = days
+        self.startDate = startDate
+        self.endDate = endDate
     }
 }
