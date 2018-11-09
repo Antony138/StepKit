@@ -426,7 +426,7 @@ extension StepKitManager {
     func generateMonthRecords(months: Int) {
         monthRecords.removeAll()
         for i in 0..<months {
-            let day = Calendar.current.date(byAdding: .month, value: -i, to: startDayOfCurrentMonth())!
+            let day = Calendar.current.date(byAdding: .month, value: -i, to: Date.startDayOfThisMonth)!
             let anchorDays = getMonthStartDayAndEndDayFor(day: day)
             let monthRecord = MonthRecord.initWith(days: generateDayRecordsIn(startDayOfMonth: day), startDate: anchorDays.startDay, endDate: anchorDays.endDate)
             monthRecords.append(monthRecord)
@@ -445,10 +445,6 @@ extension StepKitManager {
 //        for monthRecord in monthRecords {
 //            dayRecords.append(contentsOf: monthRecord.days.reversed())
 //        }
-    }
-    
-    func startDayOfCurrentMonth() -> Date {
-        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: Date())))!
     }
     
     func getMonthStartDayAndEndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
@@ -480,5 +476,11 @@ extension StepKitManager {
             dayRecords.append(dayRecord)
         }
         return dayRecords
+    }
+}
+
+extension Date {
+    static var startDayOfThisMonth: Date {
+        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: Date())))!
     }
 }
