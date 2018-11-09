@@ -26,8 +26,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let logPath: NSURL = documentDirectoryURL.appendingPathComponent("steps.log") as NSURL
 
         log.setup(level: .debug, showThreadName: true, showLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: logPath, fileLevel: .debug)
-        
-        log.info("didFinishLaunchingWithOptions")
         return true
     }
     

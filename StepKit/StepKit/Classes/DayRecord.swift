@@ -15,10 +15,9 @@ class DayRecord: NSObject {
     var startDate = Date()
     var endDate = Date()
     
-    class func initWith(startDate: Date, endDate: Date) -> DayRecord {
-        let dayRecord = DayRecord()
-        dayRecord.startDate = startDate
-        dayRecord.endDate = endDate
-        return dayRecord
+    convenience init(startDate: Date, endDate: Date) {
+        self.init()
+        self.startDate = startDate
+        self.endDate = endDate
     }
 }
