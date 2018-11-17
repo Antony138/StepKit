@@ -309,7 +309,7 @@ extension StepKitManager {
                         self.delegate?.logToSandBox(message: "startDate: \(startDate); step: \(value)")
                     case .distance:
                         value = quantity.doubleValue(for: HKUnit.meterUnit(with: .kilo))
-                        self.delegate?.logToSandBox(message: "startDate: \(startDate); calorie: \(value)")
+                        self.delegate?.logToSandBox(message: "startDate: \(startDate); distance: \(value)")
                     case .calorie:
                         value = Int(quantity.doubleValue(for: HKUnit.kilocalorie()))
                         self.delegate?.logToSandBox(message: "startDate: \(startDate); calorie: \(value)")
@@ -336,51 +336,6 @@ extension StepKitManager {
 
             done(true, (self.dayRecords, self.monthRecords), error)
         }
-        
-        // 这个回调在关闭App之后不起作用，所以还需要Observer Query
-        // The results handler for monitoring updates to the HealthKit store.
-        collectionQuery.statisticsUpdateHandler = { query, statistics, collection, error in
-            guard let updateCollection = collection else {
-                print("*** An error occurred while statistics update: \(String(describing: error?.localizedDescription)) ***")
-                return
-            }
-            
-            self.delegate?.logToSandBox(message: "「statisticsUpdateHandler」: HKStatisticsCollectionQuery 检测到到数据有更新")
-            updateCollection.enumerateStatistics(from: startDate, to: self.now, with: { (statistics, stop) in
-                if let quantity = statistics.sumQuantity() {
-                    let startDate = statistics.startDate
-                    _ = statistics.endDate
-                    var value: Any
-                    switch dataType {
-                    case .step:
-                        value = Int(quantity.doubleValue(for: HKUnit.count()))
-                    case .distance:
-                        value = quantity.doubleValue(for: HKUnit.meterUnit(with: .kilo))
-                    case .calorie:
-                        value = Int(quantity.doubleValue(for: HKUnit.kilocalorie()))
-                    }
-                    
-                    // Update Day Data
-                    for dayRecord in self.dayRecords {
-                        if dayRecord.startDate == startDate {
-                            self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
-                        }
-                    }
-
-                    for monthRecord in self.monthRecords {
-                        for dayRecord in monthRecord.days {
-                            // 根据日期判断，是否要将查询到的step加入到dayRecord中
-                            if dayRecord.startDate == startDate {
-                                self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
-                            }
-                        }
-                    }
-                }
-            })
-
-            done(true, (self.dayRecords, self.monthRecords), error)
-        }
-        
         HKHealthStore().execute(collectionQuery)
     }
     
