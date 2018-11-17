@@ -48,6 +48,7 @@ class CoreMotionManager {
             if let distance = data.distance {
                 self.distanceString = "\(distance)"
             }
+            log.info("CoreMotion_startUpdates有了更新, steps:\(steps); distance: \(self.distanceString)")
             
             updateHandler("\(steps)", self.distanceString)
         }
