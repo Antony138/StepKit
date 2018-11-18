@@ -13,6 +13,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var distance: UILabel!
     @IBOutlet weak var calorie: UILabel!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var healthKitTodayStep: UILabel!
+    @IBOutlet weak var healthKitTodayDistance: UILabel!
+    @IBOutlet weak var healthKitTodayCalorie: UILabel!
+    
     
     var monthRecords = [MonthRecord]() {
         didSet {
@@ -52,24 +56,34 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: StepKitUploadDelegate {
-    func logToSandBox(message: String) {
-        log.info(message)
-    }
-    
-    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?) {
+    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), coreMotionToday: DayRecord?, HealthKitToday: DayRecord?) {
         log.info("在ViewController拿到了要upload的数据的回调, 可以在这里实现数据具体上传到服务器的方法")
         
-        if let today = today {
-            log.info("今天的步数: \(today.steps); 距离: \(today.distance); 卡路里: \(today.calorie)")
+        if let today = coreMotionToday {
+            log.info("CoreMotion:今天的步数: \(today.steps); 距离: \(today.distance); 卡路里: \(today.calorie)")
             self.step.text = today.steps.description
             self.distance.text = String(format: "%.2f", today.distance) + " km"
             self.calorie.text = today.calorie.description
         }
         else {
-            log.info("today没有数据？")
+            log.info("coreMotionToday没有数据？")
+        }
+        
+        if let today = HealthKitToday {
+            log.info("HealthKit: 今天的步数: \(today.steps); 距离: \(today.distance); 卡路里: \(today.calorie)")
+            self.healthKitTodayStep.text = today.steps.description
+            self.healthKitTodayDistance.text = String(format: "%.2f", today.distance) + " km"
+            self.healthKitTodayCalorie.text = today.calorie.description
+        }
+        else {
+            log.info("HealthKitToday没有数据？")
         }
         
         monthRecords = records.monthRecords
+    }
+    
+    func logToSandBox(message: String) {
+        log.info(message)
     }
 }
 

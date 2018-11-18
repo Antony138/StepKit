@@ -7,7 +7,7 @@
 //
 
 protocol StepKitUploadDelegate {
-    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?)
+    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), coreMotionToday: DayRecord?, HealthKitToday: DayRecord?)
     func logToSandBox(message: String)
 }
 
@@ -56,6 +56,8 @@ class StepKitManager: NSObject {
     
     var liveSteps: Int?
     var liveDistance: Double?
+    
+    var healthKitToday: DayRecord?
 }
 
 extension StepKitManager {
@@ -69,7 +71,7 @@ extension StepKitManager {
                 if let distance = distance {
                     self.updateValue(value: distance, startDate: self.beginOfToday, dataType: .distance)
                 }
-                self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord())
+                self.delegate?.upload(records: (self.dayRecords, self.monthRecords), coreMotionToday: self.getTodayRecord(), HealthKitToday: self.healthKitToday)
             }
         }
         
@@ -242,7 +244,7 @@ extension StepKitManager {
         
         dispatchGroup.notify(queue: .main) {
             // 在这里回调delegate, 因为无论是HKObserverQuery更新的查询，还是常规的HKStatisticsCollectionQuery查询, 都走到这里
-            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord())
+            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), coreMotionToday: self.getTodayRecord(), HealthKitToday: self.healthKitToday)
         }
     }
     
@@ -346,6 +348,9 @@ extension StepKitManager {
                         if let liveDistance = self.liveDistance {
                             self.updateValue(value: liveDistance, startDate: startDate, dataType: .distance)
                         }
+                        
+                        // HealthKit的「今天」，看和CoreMotion的「今天」有何差异
+                        self.updateHealthKitTodayVlaue(value: value, startDate: startDate, endDate: statistics.endDate, dataType: dataType)
                     }
                 }
             })
@@ -370,6 +375,31 @@ extension StepKitManager {
                         }
                 }
             }
+        }
+    }
+    
+    func updateHealthKitTodayVlaue(value: Any, startDate: Date, endDate: Date, dataType: DataType) {
+        if let healthKitToday = healthKitToday {
+            switch dataType {
+            case .step:
+                healthKitToday.steps = value as! Int
+            case .distance:
+                healthKitToday.distance = value as! Double
+            case .calorie:
+                healthKitToday.calorie = value as! Int
+            }
+            self.healthKitToday = healthKitToday
+        } else {
+            let healthKitToday = DayRecord(startDate: startDate, endDate: endDate)
+            switch dataType {
+            case .step:
+                healthKitToday.steps = value as! Int
+            case .distance:
+                healthKitToday.distance = value as! Double
+            case .calorie:
+                healthKitToday.calorie = value as! Int
+            }
+            self.healthKitToday = healthKitToday
         }
     }
 }
