@@ -32,7 +32,7 @@ class CoreMotionManager {
             
             let steps = data.numberOfSteps.intValue
             if let distance = data.distance {
-                self.distance = distance.doubleValue
+                self.distance = distance.doubleValue / 1000
                 updateHandler(steps, self.distance)
             } else {
                 updateHandler(steps, nil)
@@ -48,7 +48,7 @@ class CoreMotionManager {
             
             let steps = data.numberOfSteps.intValue
             if let distance = data.distance {
-                self.distance = distance.doubleValue
+                self.distance = distance.doubleValue / 1000
                 updateHandler(steps, self.distance)
             } else {
                 updateHandler(steps, nil)

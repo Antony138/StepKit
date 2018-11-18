@@ -329,13 +329,10 @@ extension StepKitManager {
                     switch dataType {
                     case .step:
                         value = Int(quantity.doubleValue(for: HKUnit.count()))
-//                        self.delegate?.logToSandBox(message: "startDate: \(startDate); step: \(value)")
                     case .distance:
                         value = quantity.doubleValue(for: HKUnit.meterUnit(with: .kilo))
-//                        self.delegate?.logToSandBox(message: "startDate: \(startDate); distance: \(value)")
                     case .calorie:
                         value = Int(quantity.doubleValue(for: HKUnit.kilocalorie()))
-//                        self.delegate?.logToSandBox(message: "startDate: \(startDate); calorie: \(value)")
                     }
                     
                     // Update Month Data

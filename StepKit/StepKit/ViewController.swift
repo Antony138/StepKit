@@ -9,9 +9,9 @@
 import UIKit
 
 class ViewController: UIViewController {
-    @IBOutlet weak var todayStepLabel: UILabel!
-    @IBOutlet weak var liveSteps: UILabel!
-    @IBOutlet weak var liveDistance: UILabel!
+    @IBOutlet weak var step: UILabel!
+    @IBOutlet weak var distance: UILabel!
+    @IBOutlet weak var calorie: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,17 +42,6 @@ class ViewController: UIViewController {
 //            }
 //        }
     }
-    
-    @IBAction func liveTracking(_ sender: UIButton) {
-        CoreMotionManager.shared.startLiveTrackingTodayData { (steps, distance) in
-            DispatchQueue.main.async {
-                self.liveSteps.text = "\(steps)"
-                if let distance = distance {
-                    self.liveDistance.text = "\(distance)"
-                } 
-            }
-        }
-    }
 }
 
 extension ViewController: StepKitUploadDelegate {
@@ -65,6 +54,9 @@ extension ViewController: StepKitUploadDelegate {
 
         if let today = today {
             log.info("今天的步数: \(today.steps); 距离: \(today.distance); 卡路里: \(today.calorie)")
+            self.step.text = today.steps.description
+            self.distance.text = String(format: "%.2f", today.distance) + " km"
+            self.calorie.text = today.calorie.description
         }
         else {
             log.info("today没有数据？")
