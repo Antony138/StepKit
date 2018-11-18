@@ -12,6 +12,13 @@ class ViewController: UIViewController {
     @IBOutlet weak var step: UILabel!
     @IBOutlet weak var distance: UILabel!
     @IBOutlet weak var calorie: UILabel!
+    @IBOutlet weak var tableView: UITableView!
+    
+    var monthRecords = [MonthRecord]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +58,7 @@ extension ViewController: StepKitUploadDelegate {
     
     func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?, done: @escaping (Bool, Error?) -> Void) {
         log.info("在ViewController拿到了要upload的数据的回调, 可以在这里实现数据具体上传到服务器的方法")
-
+        
         if let today = today {
             log.info("今天的步数: \(today.steps); 距离: \(today.distance); 卡路里: \(today.calorie)")
             self.step.text = today.steps.description
@@ -61,6 +68,53 @@ extension ViewController: StepKitUploadDelegate {
         else {
             log.info("today没有数据？")
         }
+        
+        monthRecords = records.monthRecords
     }
 }
 
+extension ViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return monthRecords.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return monthRecords[section].days.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "stepCell", for: indexPath) as! StepTableViewCell
+        cell.day = monthRecords[indexPath.section].days.reversed()[indexPath.row]
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let monthRecord = monthRecords[section]
+        let total = ": TOTAL: " + monthRecord.steps.description + "; " + String(format: "%.2f", monthRecord.distance) + " km" + "; " + "\(monthRecord.calorie)"
+        return monthRecord.startDate.toString(dateFormat: "yyyy-MM") + total
+    }
+}
+
+class StepTableViewCell: UITableViewCell {
+    @IBOutlet weak var date: UILabel!
+    @IBOutlet weak var step: UILabel!
+    @IBOutlet weak var distance: UILabel!
+    @IBOutlet weak var calorie: UILabel!
+    
+    var day: DayRecord! {
+        didSet {
+            date.text = day.startDate.toString(dateFormat: "yyyy-MM-dd")
+            step.text = day.steps.description
+            distance.text = String(format: "%.2f", day.distance) + " km"
+            calorie.text = day.calorie.description
+        }
+    }
+}
+
+extension Date {
+    func toString( dateFormat format  : String ) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.string(from: self)
+    }
+}
