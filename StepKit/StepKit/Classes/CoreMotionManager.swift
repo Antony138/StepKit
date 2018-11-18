@@ -15,7 +15,7 @@ class CoreMotionManager {
     let pedometer = CMPedometer()
     var distance = 0.0
     
-    func startLiveTrackingTodayData(updateHandler: @escaping(_ newStep: Int, _ newDistance: Double) -> Void)  {
+    func startLiveTrackingTodayData(updateHandler: @escaping(_ newStep: Int, _ newDistance: Double?) -> Void)  {
         if CMPedometer.isStepCountingAvailable() == false {
             log.info("CMPedometer.isStepCountingAvailable() == false")
             return
@@ -33,9 +33,11 @@ class CoreMotionManager {
             let steps = data.numberOfSteps.intValue
             if let distance = data.distance {
                 self.distance = distance.doubleValue
+                updateHandler(steps, self.distance)
+            } else {
+                updateHandler(steps, nil)
             }
-            
-            updateHandler(steps, self.distance)
+            log.info("CoreMotion_queryPedometerData有了更新, steps:\(steps); distance: \(self.distance)")
         }
 
         pedometer.startUpdates(from: startOfToday) { (data, error) in
@@ -47,10 +49,11 @@ class CoreMotionManager {
             let steps = data.numberOfSteps.intValue
             if let distance = data.distance {
                 self.distance = distance.doubleValue
+                updateHandler(steps, self.distance)
+            } else {
+                updateHandler(steps, nil)
             }
             log.info("CoreMotion_startUpdates有了更新, steps:\(steps); distance: \(self.distance)")
-            
-            updateHandler(steps, self.distance)
         }
     }
 }

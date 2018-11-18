@@ -50,23 +50,32 @@ class StepKitManager: NSObject {
     
     var delegate: StepKitUploadDelegate?
     
-    var userInputMonths = 0
+    var userInputMonths = 12
     
     let dispatchGroup = DispatchGroup()
+    
+    var liveSteps: Int?
+    var liveDistance: Double?
 }
 
-
 extension StepKitManager {
-    
-    func authorizeAndQueryOneYearData(done: @escaping (_ success: Bool, (dayRecords: [DayRecord], monthRecords: [MonthRecord]), _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
+    func authorizeAndQueryOneYearData() {
+        
+        CoreMotionManager.shared.startLiveTrackingTodayData { (steps, distance) in
+            self.liveSteps = steps
+            self.liveDistance = distance
+            if !self.monthRecords.isEmpty {
+                self.updateValue(value: steps, startDate: self.beginOfToday, dataType: .step)
+                if let distance = distance {
+                    self.updateValue(value: distance, startDate: self.beginOfToday, dataType: .distance)
+                }
+                self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord(), done: { (success, error) in })
+            }
+        }
         
         authorizeHealthKit { (success, error) in
             self.delegate?.logToSandBox(message: "3.可以查询数据了")
-            self.queryAllData(months: 2, done: done)
-        }
-        
-        CoreMotionManager.shared.startLiveTrackingTodayData { (steps, distance) in
-            
+            self.queryAllData(months: self.userInputMonths)
         }
     }
     
@@ -119,8 +128,8 @@ extension StepKitManager {
             self.getDataSourcePredicate(done: { (dataSourcePredicate) in
                 self.dataSourcePredicate = dataSourcePredicate
                 self.delegate?.logToSandBox(message: "2.设置过滤成功")
+                 completion(success, error)
             })
-            completion(success, error)
         }
     }
 }
@@ -163,14 +172,11 @@ extension StepKitManager {
             
             // 已确认: App关闭时候能拿到更新
             self.delegate?.logToSandBox(message: "「HKObserverQuery completionHandler」: 检测到到数据有更新了")
+            
+            // 过滤条件还没创建, 不要开始查询
+            guard self.dataSourcePredicate != nil else { return }
             // HealthKit had update, Query Again
-            self.queryAllData(months: self.userInputMonths, done: { (success, records, todayRecord, error) in
-                
-                if let error = error {
-                    print("*** An error occured while queryAllData in observer. \(error.localizedDescription) ***")
-                    abort()
-                }
-            })
+            self.queryAllData(months: self.userInputMonths)
             
             // If you have subscribed for background updates you must call the completion handler here.(官方文档注释)
             completionHandler()
@@ -201,7 +207,7 @@ extension StepKitManager {
     ///   - (dayRecords, monthRecords): A Tuple of the Feedback Data
     ///   - tadayRecord: The data of today
     ///   - error: Return error if something wrong.
-    func queryAllData(months: Int, done: @escaping (_ success: Bool, (dayRecords: [DayRecord], monthRecords: [MonthRecord]), _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
+    func queryAllData(months: Int) {
         generateMonthRecords(months: months)
 
         userInputMonths = months
@@ -231,12 +237,10 @@ extension StepKitManager {
         
         guard errors == nil else {
             print("*** An error occurred while calculating the statistics:\(String(describing: errors))")
-            done(false, ([DayRecord](), [MonthRecord]()), nil, nil)
             return
         }
         
         dispatchGroup.notify(queue: .main) {
-            done(true, (self.dayRecords, self.monthRecords), self.getTodayRecord(), nil)
             // 在这里回调delegate, 因为无论是HKObserverQuery更新的查询，还是常规的HKStatisticsCollectionQuery查询, 都走到这里
             self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord(), done: { (success, error) in })
         }
@@ -334,20 +338,16 @@ extension StepKitManager {
 //                        self.delegate?.logToSandBox(message: "startDate: \(startDate); calorie: \(value)")
                     }
                     
-                    // Update Day Data
-//                    for dayRecord in self.dayRecords {
-//                        if dayRecord.startDate == startDate {
-//                            self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
-//                        }
-//                    }
-
                     // Update Month Data
-                    for monthRecord in self.monthRecords {
-                        for dayRecord in monthRecord.days {
-                            // 根据日期判断，是否要将查询到的step加入到dayRecord中
-                            if dayRecord.startDate == startDate {
-                                self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
-                            }
+                    if startDate != self.beginOfToday {
+                        self.updateValue(value: value, startDate: startDate, dataType: dataType)
+                    } else {
+                        // 「今天」的数据，采用CoreMotion的
+                        if let liveSteps = self.liveSteps {
+                            self.updateValue(value: liveSteps, startDate: startDate, dataType: .step)
+                        }
+                        if let liveDistance = self.liveDistance {
+                            self.updateValue(value: liveDistance, startDate: startDate, dataType: .distance)
                         }
                     }
                 }
@@ -358,14 +358,21 @@ extension StepKitManager {
         HKHealthStore().execute(collectionQuery)
     }
     
-    func updateValue(value: Any, dayRecord: DayRecord, dataType: DataType) {
-        switch dataType {
-        case .step:
-            dayRecord.steps = value as! Int
-        case .distance:
-            dayRecord.distance = value as! Double
-        case .calorie:
-            dayRecord.calorie = value as! Int
+    func updateValue(value: Any, startDate: Date, dataType: DataType) {
+        for monthRecord in self.monthRecords {
+            for dayRecord in monthRecord.days {
+                // 根据日期判断，是否要将查询到的step加入到dayRecord中
+                if dayRecord.startDate == startDate {
+                        switch dataType {
+                        case .step:
+                            dayRecord.steps = value as! Int
+                        case .distance:
+                            dayRecord.distance = value as! Double
+                        case .calorie:
+                            dayRecord.calorie = value as! Int
+                        }
+                }
+            }
         }
     }
 }
@@ -404,21 +411,7 @@ extension StepKitManager {
             monthRecords.append(monthRecord)
         }
     }
-    
-//    func generateDayRecords() {
-//        dayRecords.removeAll()
-//        // You must call generateMonthRecords() befor call this method
-//        // Order: ......the day before yesterday >> yesterday >> today
-//        for monthRecord in monthRecords.reversed() {
-//            dayRecords.append(contentsOf: monthRecord.days)
-//        }
-//
-//        // Order: today >> yesterday >> the day before yesterday......
-////        for monthRecord in monthRecords {
-////            dayRecords.append(contentsOf: monthRecord.days.reversed())
-////        }
-//    }
-    
+
     func getMonth_StartDay_EndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
         let startDay = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: day)))!
         let endDay = Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: startDay)!

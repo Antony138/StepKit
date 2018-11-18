@@ -19,11 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        StepKitManager.shared.authorizeAndQueryOneYearData { (_, _, _, _) in
-            
-        }
-        
-
         let documentDirectoryURL =  try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         let logPath: NSURL = documentDirectoryURL.appendingPathComponent("steps.log") as NSURL
 
