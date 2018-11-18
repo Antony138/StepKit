@@ -56,7 +56,7 @@ extension ViewController: StepKitUploadDelegate {
         log.info(message)
     }
     
-    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?, done: @escaping (Bool, Error?) -> Void) {
+    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?) {
         log.info("在ViewController拿到了要upload的数据的回调, 可以在这里实现数据具体上传到服务器的方法")
         
         if let today = today {
@@ -90,7 +90,7 @@ extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let monthRecord = monthRecords[section]
-        let total = ": TOTAL: " + monthRecord.steps.description + "; " + String(format: "%.2f", monthRecord.distance) + " km" + "; " + "\(monthRecord.calorie)"
+        let total = ": TOTAL: " + monthRecord.steps.description + "; " + String(format: "%.2f", monthRecord.distance) + " km" + "; " + monthRecord.calorie.description
         return monthRecord.startDate.toString(dateFormat: "yyyy-MM") + total
     }
 }

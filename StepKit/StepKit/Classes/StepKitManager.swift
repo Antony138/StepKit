@@ -7,7 +7,7 @@
 //
 
 protocol StepKitUploadDelegate {
-    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?, done: @escaping (_ success: Bool, _ error: Error?) -> Void)
+    func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?)
     func logToSandBox(message: String)
 }
 
@@ -69,7 +69,7 @@ extension StepKitManager {
                 if let distance = distance {
                     self.updateValue(value: distance, startDate: self.beginOfToday, dataType: .distance)
                 }
-                self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord(), done: { (success, error) in })
+                self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord())
             }
         }
         
@@ -242,7 +242,7 @@ extension StepKitManager {
         
         dispatchGroup.notify(queue: .main) {
             // 在这里回调delegate, 因为无论是HKObserverQuery更新的查询，还是常规的HKStatisticsCollectionQuery查询, 都走到这里
-            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord(), done: { (success, error) in })
+            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), today: self.getTodayRecord())
         }
     }
     
