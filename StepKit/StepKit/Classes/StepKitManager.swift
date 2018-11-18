@@ -71,7 +71,9 @@ extension StepKitManager {
                 if let distance = distance {
                     self.updateValue(value: distance, startDate: self.beginOfToday, dataType: .distance)
                 }
-                self.delegate?.upload(records: (self.dayRecords, self.monthRecords), coreMotionToday: self.getTodayRecord(), HealthKitToday: self.healthKitToday)
+                DispatchQueue.main.async {
+                    self.delegate?.upload(records: (self.dayRecords, self.monthRecords), coreMotionToday: self.getTodayRecord(), HealthKitToday: self.healthKitToday)
+                }
             }
         }
         
@@ -176,7 +178,10 @@ extension StepKitManager {
             self.delegate?.logToSandBox(message: "「HKObserverQuery completionHandler」: 检测到到数据有更新了")
             
             // 过滤条件还没创建, 不要开始查询
-            guard self.dataSourcePredicate != nil else { return }
+            guard (self.dataSourcePredicate != nil) else {
+                self.delegate?.logToSandBox(message: "HKObserverQuery回调了，但是没有dataSourcePredicate，不查询数据")
+                return
+            }
             // HealthKit had update, Query Again
             self.queryAllData(months: self.userInputMonths)
             
@@ -243,8 +248,10 @@ extension StepKitManager {
         }
         
         dispatchGroup.notify(queue: .main) {
-            // 在这里回调delegate, 因为无论是HKObserverQuery更新的查询，还是常规的HKStatisticsCollectionQuery查询, 都走到这里
-            self.delegate?.upload(records: (self.dayRecords, self.monthRecords), coreMotionToday: self.getTodayRecord(), HealthKitToday: self.healthKitToday)
+            DispatchQueue.main.async {
+                // 在这里回调delegate, 因为无论是HKObserverQuery更新的查询，还是常规的HKStatisticsCollectionQuery查询, 都走到这里
+                self.delegate?.upload(records: (self.dayRecords, self.monthRecords), coreMotionToday: self.getTodayRecord(), HealthKitToday: self.healthKitToday)
+            }
         }
     }
     
