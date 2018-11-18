@@ -59,7 +59,7 @@ extension ViewController: StepKitUploadDelegate {
     
     func upload(records: (dayRecords: [DayRecord], monthRecords: [MonthRecord]), today: DayRecord?, done: @escaping (Bool, Error?) -> Void) {
         log.info("在ViewController拿到了要upload的数据的回调, 可以在这里实现数据具体上传到服务器的方法")
-        log.info("dayRecords元素个数:\(records.dayRecords.count); 最后一个元素:\(records.dayRecords.last?.steps ?? 0)")
+        log.info("dayRecords元素个数:\(records.dayRecords.count); 最后一个元素的步数:\(records.dayRecords.last?.steps ?? 0)")
         
         if let today = today {
             log.info("今天的步数: \(today.steps); 距离: \(today.distance); 卡路里: \(today.calorie)")
