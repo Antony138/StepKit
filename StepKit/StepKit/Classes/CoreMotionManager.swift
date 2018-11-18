@@ -13,9 +13,9 @@ import XCGLogger
 class CoreMotionManager {
     static let shared = CoreMotionManager()
     let pedometer = CMPedometer()
-    var distanceString = ""
+    var distance = 0.0
     
-    func startLiveTrackingTodayData(updateHandler: @escaping(_ newStep: String, _ newDistance: String) -> Void)  {
+    func startLiveTrackingTodayData(updateHandler: @escaping(_ newStep: Int, _ newDistance: Double) -> Void)  {
         if CMPedometer.isStepCountingAvailable() == false {
             log.info("CMPedometer.isStepCountingAvailable() == false")
             return
@@ -32,10 +32,10 @@ class CoreMotionManager {
             
             let steps = data.numberOfSteps.intValue
             if let distance = data.distance {
-                self.distanceString = "\(distance)"
+                self.distance = distance.doubleValue
             }
             
-            updateHandler("\(steps)", self.distanceString)
+            updateHandler(steps, self.distance)
         }
 
         pedometer.startUpdates(from: startOfToday) { (data, error) in
@@ -46,11 +46,11 @@ class CoreMotionManager {
             
             let steps = data.numberOfSteps.intValue
             if let distance = data.distance {
-                self.distanceString = "\(distance)"
+                self.distance = distance.doubleValue
             }
-            log.info("CoreMotion_startUpdates有了更新, steps:\(steps); distance: \(self.distanceString)")
+            log.info("CoreMotion_startUpdates有了更新, steps:\(steps); distance: \(self.distance)")
             
-            updateHandler("\(steps)", self.distanceString)
+            updateHandler(steps, self.distance)
         }
     }
 }

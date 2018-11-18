@@ -40,15 +40,36 @@ class StepKitManager: NSObject {
     
     // Feedback
     var monthRecords = [MonthRecord]()
-    var dayRecords = [DayRecord]()
+    var dayRecords: [DayRecord] {
+        var records = [DayRecord]()
+        for monthRecord in monthRecords.reversed() {
+            records.append(contentsOf: monthRecord.days)
+        }
+        return records
+    }
     
     var delegate: StepKitUploadDelegate?
     
     var userInputMonths = 0
+    
+    let dispatchGroup = DispatchGroup()
 }
 
 
 extension StepKitManager {
+    
+    func authorizeAndQueryOneYearData(done: @escaping (_ success: Bool, (dayRecords: [DayRecord], monthRecords: [MonthRecord]), _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
+        
+        authorizeHealthKit { (success, error) in
+            self.delegate?.logToSandBox(message: "3.可以查询数据了")
+            self.queryAllData(months: 2, done: done)
+        }
+        
+        CoreMotionManager.shared.startLiveTrackingTodayData { (steps, distance) in
+            
+        }
+    }
+    
     // MARK: Authorize HealthKit
     /// Authorizing HealthKit
     ///
@@ -89,7 +110,7 @@ extension StepKitManager {
                 }
                 return
             }
-            self.delegate?.logToSandBox(message: "HealthKit Successfully Authorized.")
+            self.delegate?.logToSandBox(message: "1.HealthKit Successfully Authorized.")
             
             // Setup Background updates
             self.startObserverQuery()
@@ -97,7 +118,7 @@ extension StepKitManager {
             // Use this Predicate filter Data from user input & other apps inpout
             self.getDataSourcePredicate(done: { (dataSourcePredicate) in
                 self.dataSourcePredicate = dataSourcePredicate
-                self.delegate?.logToSandBox(message: "Had Create getDataSourcePredicate.")
+                self.delegate?.logToSandBox(message: "2.设置过滤成功")
             })
             completion(success, error)
         }
@@ -182,31 +203,29 @@ extension StepKitManager {
     ///   - error: Return error if something wrong.
     func queryAllData(months: Int, done: @escaping (_ success: Bool, (dayRecords: [DayRecord], monthRecords: [MonthRecord]), _ tadayRecord: DayRecord?, _ error: Error?) -> Void) {
         generateMonthRecords(months: months)
-        generateDayRecords()
+
         userInputMonths = months
         
         var errors: Error?
         
-        let dispatchGroup = DispatchGroup()
-        
         dispatchGroup.enter()
         queryData(dataType: .step, months: months, source: .iPhoneItself) { (success, records, error) in
             errors = error
-            dispatchGroup.leave()
+            self.dispatchGroup.leave()
         }
         dispatchGroup.wait()
         
         dispatchGroup.enter()
         queryData(dataType: .distance, months: months, source: .iPhoneItself) { (success, records, error) in
             errors = error
-            dispatchGroup.leave()
+            self.dispatchGroup.leave()
         }
         dispatchGroup.wait()
         
         dispatchGroup.enter()
         queryData(dataType: .calorie, months: months, source: .both) { (success, records, error) in
             errors = error
-            dispatchGroup.leave()
+            self.dispatchGroup.leave()
         }
         dispatchGroup.wait()
         
@@ -306,21 +325,21 @@ extension StepKitManager {
                     switch dataType {
                     case .step:
                         value = Int(quantity.doubleValue(for: HKUnit.count()))
-                        self.delegate?.logToSandBox(message: "startDate: \(startDate); step: \(value)")
+//                        self.delegate?.logToSandBox(message: "startDate: \(startDate); step: \(value)")
                     case .distance:
                         value = quantity.doubleValue(for: HKUnit.meterUnit(with: .kilo))
-                        self.delegate?.logToSandBox(message: "startDate: \(startDate); distance: \(value)")
+//                        self.delegate?.logToSandBox(message: "startDate: \(startDate); distance: \(value)")
                     case .calorie:
                         value = Int(quantity.doubleValue(for: HKUnit.kilocalorie()))
-                        self.delegate?.logToSandBox(message: "startDate: \(startDate); calorie: \(value)")
+//                        self.delegate?.logToSandBox(message: "startDate: \(startDate); calorie: \(value)")
                     }
                     
                     // Update Day Data
-                    for dayRecord in self.dayRecords {
-                        if dayRecord.startDate == startDate {
-                            self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
-                        }
-                    }
+//                    for dayRecord in self.dayRecords {
+//                        if dayRecord.startDate == startDate {
+//                            self.updateValue(value: value, dayRecord: dayRecord, dataType: dataType)
+//                        }
+//                    }
 
                     // Update Month Data
                     for monthRecord in self.monthRecords {
@@ -386,19 +405,19 @@ extension StepKitManager {
         }
     }
     
-    func generateDayRecords() {
-        dayRecords.removeAll()
-        // You must call generateMonthRecords() befor call this method
-        // Order: ......the day before yesterday >> yesterday >> today
-        for monthRecord in monthRecords.reversed() {
-            dayRecords.append(contentsOf: monthRecord.days)
-        }
-
-        // Order: today >> yesterday >> the day before yesterday......
-//        for monthRecord in monthRecords {
-//            dayRecords.append(contentsOf: monthRecord.days.reversed())
+//    func generateDayRecords() {
+//        dayRecords.removeAll()
+//        // You must call generateMonthRecords() befor call this method
+//        // Order: ......the day before yesterday >> yesterday >> today
+//        for monthRecord in monthRecords.reversed() {
+//            dayRecords.append(contentsOf: monthRecord.days)
 //        }
-    }
+//
+//        // Order: today >> yesterday >> the day before yesterday......
+////        for monthRecord in monthRecords {
+////            dayRecords.append(contentsOf: monthRecord.days.reversed())
+////        }
+//    }
     
     func getMonth_StartDay_EndDayFor(day: Date) -> (startDay: Date, endDate: Date) {
         let startDay = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: day)))!
